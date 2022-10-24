@@ -1,63 +1,45 @@
-#ifndef PUZZLE
-#define PUZZLE
+#ifndef PUZZLE_H
+#define PUZZLE_H
 
+#include <fstream>
 #include <iostream>
-#include <nlohmann/json.hpp>
+#include <map>
+#include <sstream>
+#include <string>
 #include <vector>
+
+#include "Alldiff.h"
+#include "BinaryArc.h"
+#include "Constraint.h"
+#include "Tile.h"
+#include "macros.h"
 
 using namespace std;
 
 class Puzzle {
  public:
-  Puzzle();
+  Puzzle(string filename, puzzleType type);
+  // might need to have a deep copy constructor
+
   // we should probably read in the puzzle now
   // what should the puzzle even be able to do?
 
+  // what kind of functionality do we want from this?
+
   // is this the level where we should start considering out constraints?
+  Tile* getTile(int x, int y);
+  void printPuzzle();
 
  private:
+  puzzleType type;
+  // we honestly might want this to be exposed?
   vector<vector<Tile*>> arr;  // we already know the size?
-  class Tile {
-   public:
-    // we should start with a full domain and be able to remove from it
-    // we don't know the assignment
-    Tile() {
-      Tile(0);
-    }
+  map<string, Constraint*> constraints;
+  void addConstraintsStandard();
 
-    // I think basic functionality here
+  void readInStandard(string filename);
 
-    // we know the assignment ahead of time, so we wouldn't care about the domain
-    Tile(int num) {
-      this->num = num;
-      if (num == 0) {
-        for (int i = 1; i < 10; i++) {
-          domain.push_back(i);
-        }
-      }
-    }
-    // do we fill up the domain
-    int num;  // the number it's been assigned
-    vector<int> domain;
-
-    // don't know if we will even need this
-    int getDomainSize() {
-      return (int)domain.size();
-    }
-
-    void removeFromDomain(int val) {
-      int index = -1;
-      for (int i = 0; i < (int)arr.size(); i++) {
-        if (arr[i] == val) {
-          index = i;
-          break;
-        }
-      }
-      if (index != -1) {
-        arr.erase(arr.begin(), arr.begin() + index);
-      }
-    }
-  };
+  // should this be in its own file so that we can see it elsewhere?
 
   // what about the puzzle with the
 };

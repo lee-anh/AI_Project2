@@ -1,39 +1,62 @@
 #include "Alldiff.h"
 
-Alldiff::Alldiff(vector<int> start) {
-  arr = vector<int>(start);
+Alldiff::Alldiff(vector<vector<Tile*>> pArr, group g, int x, int y) {
+  this->pArr = pArr;  // basically just for reading for now
+  this->g = g;
+  this->x = x;
+  this->y = y;
+  if (g == BOX) {
+    initBox();
+  } else if (g == COL) {
+    initCol();
+  } else {  // g == ROW
+    initRow();
+  }
 }
 
-bool Alldiff::check(int val) {
-  for (int n : arr) {
-    if (n == val) {
-      return false;
+// maybe we need to return a pair
+// maybe we could add it straight to the Map
+vector<pair<string, BinaryArc*>> Alldiff::toBinaryArcs() {
+  // where are we going to add these binaries to? // we might have to handle that a level up
+  // make sure to add in both directions
+  vector<pair<string, BinaryArc*>> toReturn;
+  for (int i = 0; i < 9; i++) {  // I think these bounds are right
+    for (int j = 0; j < 9; j++) {
+      if (i != j) {
+        pair<string, BinaryArc*> toAdd = make_pair(arr[i]->getId(), new BinaryArc(arr[i], arr[j]));
+        toReturn.push_back(toAdd);
+      }
     }
   }
-  return true;
+
+  return toReturn;
 }
 
-bool Alldiff::add(int val) {
-  if (check(val)) {
-    arr.push_back(val);
-    return true;
+void Alldiff::printAlldiff() {
+  cout << "Alldiff: " << endl;
+  for (Tile* t : arr) {
+    t->printTile();
   }
-  return false;
 }
 
-// true if value was found and successfully removed
-// false if not
-bool Alldiff::remove(int val) {
-  int index = -1;
-  for (int i = 0; i < (int)arr.size(); i++) {
-    if (arr[i] == val) {
-      index = i;
-      break;
+void Alldiff::initBox() {
+  // go three across, go three down
+
+  for (int i = 0; i < 3; i++) {
+    for (int j = 0; j < 3; j++) {
+      arr.push_back(pArr[x + i][y + j]);
     }
   }
-  if (index != -1) {
-    arr.erase(arr.begin(), arr.begin() + index);
-    return true;
+}
+
+void Alldiff::initCol() {
+  for (int i = 0; i < 9; i++) {
+    arr.push_back(pArr[x + i][y]);
   }
-  return false;
+}
+
+void Alldiff::initRow() {
+  for (int i = 0; i < 9; i++) {
+    arr.push_back(pArr[x][y + i]);
+  }
 }

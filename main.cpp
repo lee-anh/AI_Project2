@@ -4,7 +4,11 @@
 
 using namespace std;
 
+#include "Puzzle.h"
+
 int main(int argc, char* argv[]) {
-  cout << "Hello world!" << endl;
+  Puzzle* p = new Puzzle("./Sudoku/puzzle1.txt", STANDARD);
+  p->printPuzzle();
+
   return 0;
 }
