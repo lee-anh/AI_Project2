@@ -15,6 +15,8 @@ class BinaryArc : public Constraint {
   BinaryArc(Tile* t1, Tile* t2);
   // we need to make sure that the assignments are satisfied?
   bool revise();
+  Tile* getTile1();
+  Tile* getTile2();
   // we need both ways for the arcs
 
  private:

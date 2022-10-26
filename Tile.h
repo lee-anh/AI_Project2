@@ -14,6 +14,7 @@ class Tile {
   int getDomainSize();
   string getId();
   int getNum();
+  void trySetNum();
   void removeFromDomain(int val);
   void printTile();
 

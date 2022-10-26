@@ -10,19 +10,28 @@ bool BinaryArc::revise() {
   bool revised = false;
   vector<int> domain1 = t1->getDomain();
   vector<int> domain2 = t2->getDomain();
+
   for (int x : domain1) {
-    bool allow = true;
-    for (int y : domain2) {
-      // if no value y in domain 2 allows (x, y) to satisfy NE, then delete x from domain1
+    int noAllowCount = 0;
+
+    for (int y : domain2) {  // really only triggers when we already have an assignment
       if (x == y) {
-        allow = false;
-        break;
+        noAllowCount++;
       }
     }
-    if (!allow) {
+
+    if (noAllowCount == (int)domain2.size()) {  // no value y in domain 2 allows (x, y) to satisfy NE
       t1->removeFromDomain(x);
       revised = true;
     }
   }
+
   return revised;
+}
+
+Tile* BinaryArc::getTile1() {
+  return t1;
+}
+Tile* BinaryArc::getTile2() {
+  return t2;
 }

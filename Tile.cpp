@@ -7,6 +7,8 @@ Tile::Tile(int num, int x, int y) {
     for (int i = 1; i < 10; i++) {
       domain.push_back(i);
     }
+  } else {
+    domain.push_back(num);  // the domain should just be that number
   }
   id = to_string(x) + to_string(y);
 }
@@ -15,8 +17,8 @@ vector<int> Tile::getDomain() {
   return domain;
 }
 
-string Tile::getId(){
-  return id; 
+string Tile::getId() {
+  return id;
 }
 
 // don't know if we will even need this
@@ -28,6 +30,13 @@ int Tile::getNum() {
   return num;
 }
 
+void Tile::trySetNum() {
+  if ((int)domain.size() == 1) {
+    num = domain[0];
+  }
+  // else we don't assign num yet
+}
+
 void Tile::removeFromDomain(int val) {
   int index = -1;
   for (int i = 0; i < (int)domain.size(); i++) {
@@ -37,12 +46,13 @@ void Tile::removeFromDomain(int val) {
     }
   }
   if (index != -1) {
-    domain.erase(domain.begin(), domain.begin() + index);
+    domain.erase(domain.begin() + index);
+    trySetNum();
   }
 }
 
 void Tile::printTile() {
-  cout << "Assignment: " << num << " Domain: ";
+  cout << "Id: " << id << " Assignment: " << num << " Domain: ";
   for (int i = 0; i < (int)domain.size(); i++) {
     cout << domain[i] << " ";
   }

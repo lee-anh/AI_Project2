@@ -1,0 +1,15 @@
+{
+  "files.associations": {
+    "vector": "cpp",
+    "iostream": "cpp",
+    "iosfwd": "cpp",
+    "iterator": "cpp",
+    "map": "cpp",
+    "unordered_map": "cpp",
+    "__split_buffer": "cpp",
+    "ios": "cpp",
+    "istream": "cpp",
+    "ostream": "cpp",
+    "streambuf": "cpp"
+  }
+}

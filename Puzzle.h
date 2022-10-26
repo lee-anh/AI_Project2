@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <queue>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -28,18 +29,23 @@ class Puzzle {
 
   // is this the level where we should start considering out constraints?
   Tile* getTile(int x, int y);
+  void printConstraintsMap();
   void printPuzzle();
+  void printPuzzleData();
+  map<string, vector<Constraint*>> getConstraintMap();
+  bool ac3();
 
  private:
   puzzleType type;
   // we honestly might want this to be exposed?
   vector<vector<Tile*>> arr;  // we already know the size?
-  map<string, Constraint*> constraints;
+  map<string, vector<Constraint*>> constraints;
   void addConstraintsStandard();
+  void addToMap(pair<string, BinaryArc*> toAdd);
 
   void readInStandard(string filename);
 
-  // should this be in its own file so that we can see it elsewhere?
+  // should this be in its own file so that we can see it elsewhere
 
   // what about the puzzle with the
 };

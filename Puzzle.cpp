@@ -8,6 +8,17 @@ Puzzle::Puzzle(string filename, puzzleType type) {
   }
 }
 
+void Puzzle::printConstraintsMap() {
+  map<string, vector<Constraint*>>::iterator it;
+  for (it = constraints.begin(); it != constraints.end(); it++) {
+    cout << "Key: " << it->first << " Values: ";
+    for (int i = 0; i < it->second.size(); i++) {
+      cout << ((BinaryArc*)it->second.at(i))->getTile2()->getId() << " ";
+    }
+    cout << endl;
+  }
+}
+
 void Puzzle::printPuzzle() {
   for (int i = 0; i < (int)arr.size(); i++) {
     for (int j = 0; j < (int)arr[i].size(); j++) {
@@ -26,6 +37,45 @@ void Puzzle::printPuzzle() {
       cout << "----------------------" << endl;
     }
   }
+}
+
+void Puzzle::printPuzzleData() {
+  for (int i = 0; i < (int)arr.size(); i++) {
+    for (int j = 0; j < (int)arr[i].size(); j++) {
+      arr[i][j]->printTile();
+    }
+  }
+}
+
+map<string, vector<Constraint*>> Puzzle::getConstraintMap() {
+  return constraints;
+}
+
+bool Puzzle::ac3() {
+  queue<BinaryArc*> q;  // add all the arcs to the queue
+  map<string, vector<Constraint*>>::iterator it;
+  for (it = constraints.begin(); it != constraints.end(); it++) {
+    for (int i = 0; i < it->second.size(); i++) {
+      q.push(((BinaryArc*)it->second.at(i)));
+    }
+  }
+
+  while (!q.empty()) {
+    BinaryArc* a = q.front();
+    q.pop();
+    if (a->revise()) {
+      if (a->getTile1()->getDomainSize() == 0) return false;
+      // for each Xk in Xi.Neighbors - Xj, do add (Xk, Xi) to queue
+      vector<Constraint*> neighbors = constraints.find(a->getTile1()->getId())->second;
+      for (Constraint* c : neighbors) {
+        BinaryArc* b = (BinaryArc*)c;  // hopefully everything should be ok with the casting
+        if (b->getTile2()->getId() != a->getTile2()->getId()) {
+          q.push(b);
+        }
+      }
+    }
+  }
+  return true;
 }
 
 Tile* Puzzle::getTile(int x, int y) {
@@ -61,9 +111,21 @@ void Puzzle::addConstraintsStandard() {
   for (int i = 0; i < (int)alldiffs.size(); i++) {
     vector<pair<string, BinaryArc*>> toAdd = alldiffs[i]->toBinaryArcs();
     for (int j = 0; j < (int)toAdd.size(); j++) {
-      constraints.insert(toAdd[j]);  // add all the constraints to the map s
+      addToMap(toAdd[j]);  // add all the constraints to the map s
     }
   }
+}
+
+void Puzzle::addToMap(pair<string, BinaryArc*> toAdd) {
+  map<string, vector<Constraint*>>::iterator it = constraints.find(toAdd.first);
+  if (it != constraints.end()) {
+    it->second.push_back(toAdd.second);
+    return;
+  }
+  // add the key to the map
+  vector<Constraint*> temp;
+  temp.push_back(toAdd.second);
+  constraints.insert(make_pair(toAdd.first, temp));
 }
 
 void Puzzle::readInStandard(string filename) {
