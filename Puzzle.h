@@ -19,17 +19,13 @@ using namespace std;
 
 class Puzzle {
  public:
-  Puzzle(string filename, puzzleType type);
-  // might need to have a deep copy constructor
+  // Puzzle(string filename, puzzleType type);
+  Puzzle(vector<vector<Tile*>> arr);
 
-  // we should probably read in the puzzle now
-  // what should the puzzle even be able to do?
-
-  // what kind of functionality do we want from this?
-
-  // is this the level where we should start considering out constraints?
   Tile* getTile(int x, int y);
-  void printConstraintsMap();
+  Tile* getTile(string id);
+  vector<vector<Tile*>> getPuzzleArr();
+
   void printPuzzle();
   void printPuzzleData();
   map<string, vector<Constraint*>> getConstraintMap();
@@ -37,17 +33,7 @@ class Puzzle {
 
  private:
   puzzleType type;
-  // we honestly might want this to be exposed?
-  vector<vector<Tile*>> arr;  // we already know the size?
-  map<string, vector<Constraint*>> constraints;
-  void addConstraintsStandard();
-  void addToMap(pair<string, BinaryArc*> toAdd);
-
-  void readInStandard(string filename);
-
-  // should this be in its own file so that we can see it elsewhere
-
-  // what about the puzzle with the
+  vector<vector<Tile*>> arr;
 };
 
 #endif

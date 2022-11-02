@@ -23,7 +23,7 @@ vector<pair<string, BinaryArc*>> Alldiff::toBinaryArcs() {
   for (int i = 0; i < 9; i++) {  // I think these bounds are right
     for (int j = 0; j < 9; j++) {
       if (i != j) {
-        pair<string, BinaryArc*> toAdd = make_pair(arr[i]->getId(), new BinaryArc(arr[i], arr[j]));
+        pair<string, BinaryArc*> toAdd = make_pair(arr[i]->getId(), new BinaryArc(arr[i]->getId(), arr[j]->getId()));
         toReturn.push_back(toAdd);
       }
     }

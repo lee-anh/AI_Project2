@@ -1,7 +1,7 @@
 CC = g++
 CFLAGS = -g -Wall -std=c++20
 
-OBJS = main.o Alldiff.o BinaryArc.o Puzzle.o Sum.o Tile.o
+OBJS = main.o Alldiff.o BinaryArc.o Control.o Puzzle.o PuzzleNode.o Sum.o Tile.o
 
 all: $(OBJS)
 	$(CC) $(CFLAGS) -o p2 *.o 
@@ -11,17 +11,23 @@ clean:
 	rm ./p2
 	rm *.o 
 
-main.o: main.cpp Puzzle.h 
+main.o: main.cpp Control.h 
 	$(CC) $(CFLAGS) -c main.cpp 
 
 Alldiff.o: Alldiff.cpp Alldiff.h Tile.h macros.h 
 	$(CC) $(CFLAGS) -c Alldiff.cpp
 
-BinaryArc.o: BinaryArc.cpp 
+BinaryArc.o: BinaryArc.cpp BinaryArc.h 
 	$(CC) $(CFLAGS) -c BinaryArc.cpp 
+
+Control.o: Control.cpp Control.h Puzzle.h PuzzleNode.h 
+	$(CC) $(CFLAGS) -c Control.cpp 
 
 Puzzle.o: Puzzle.cpp Puzzle.h Alldiff.h BinaryArc.h Constraint.h Tile.h macros.h 
 	$(CC) $(CFLAGS) -c Puzzle.cpp
+
+PuzzleNode.o: PuzzleNode.cpp PuzzleNode.h Puzzle.h
+	$(CC) $(CFLAGS) -c PuzzleNode.cpp 
 
 Sum.o: Sum.cpp Sum.h 
 	$(CC) $(CFLAGS) -c Sum.cpp

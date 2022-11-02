@@ -7,7 +7,7 @@ using namespace std;
 class Constraint {
  public:
   // what would a Constraint need?
-  bool revise();  // revise the domains of the variables involved in the constraint
+  // bool revise();  // revise the domains of the variables involved in the constraint
 };
 
 #endif

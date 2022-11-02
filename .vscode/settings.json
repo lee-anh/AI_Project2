@@ -10,6 +10,20 @@
     "ios": "cpp",
     "istream": "cpp",
     "ostream": "cpp",
-    "streambuf": "cpp"
+    "streambuf": "cpp",
+    "tuple": "cpp",
+    "variant": "cpp",
+    "__hash_table": "cpp",
+    "__tree": "cpp",
+    "array": "cpp",
+    "bitset": "cpp",
+    "deque": "cpp",
+    "initializer_list": "cpp",
+    "queue": "cpp",
+    "random": "cpp",
+    "stack": "cpp",
+    "string": "cpp",
+    "string_view": "cpp",
+    "utility": "cpp"
   }
 }

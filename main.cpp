@@ -4,16 +4,17 @@
 
 using namespace std;
 
-#include "Puzzle.h"
+#include "Control.h"
 
 int main(int argc, char* argv[]) {
-  Puzzle* p = new Puzzle("./Sudoku/puzzle1.txt", STANDARD);
+  Control* p = new Control("./Sudoku/standard/puzzle1.txt", STANDARD);
 
-  p->printPuzzleData();
+  //  p->printPuzzleData();
   p->printPuzzle();
-  // p->printConstraintsMap();
+  //  p->printConstraintsMap();
   p->ac3();
-  p->printPuzzleData();
+
+  // p->printPuzzleData();
   p->printPuzzle();
 
   return 0;
