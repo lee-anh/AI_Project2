@@ -22,14 +22,19 @@ class Puzzle {
   // Puzzle(string filename, puzzleType type);
   Puzzle(vector<vector<Tile*>> arr);
 
+  // deep copy constructor
+  Puzzle(Puzzle* p);
+
+  /// @brief check if assignment complete
+  /// @return
+  bool isAssignmentComplete();
+
   Tile* getTile(int x, int y);
   Tile* getTile(string id);
   vector<vector<Tile*>> getPuzzleArr();
 
   void printPuzzle();
   void printPuzzleData();
-  map<string, vector<Constraint*>> getConstraintMap();
-  bool ac3();
 
  private:
   puzzleType type;
