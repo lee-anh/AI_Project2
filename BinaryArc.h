@@ -25,8 +25,11 @@ class BinaryArc : public Constraint {
   // we need both ways for the arcs
 
   // TODO: need to make this available for all Constraints?
+  // just checks
   bool proposeAssignment(int x);  // how are we supposed to work with this?
-  bool removeInconsistency(); 
+  bool checkIfArcConsistent(int x);
+  bool removeInconsistency();
+
  private:
   // string id1;
   // string id2;

@@ -23,6 +23,7 @@ class Tile {
   void restoreDomainNoSet(vector<int> old);
   void removeFromDomain(int val);
   bool removeFromDomainNoSet(int val);
+  bool isInDomain(int val);
   void printTile();
 
  private:

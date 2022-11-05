@@ -46,11 +46,19 @@ void Tile::setNum(int toSet) {
 }
 
 void Tile::restoreDomain(vector<int> old) {
+  // cout << "restore for: " << id;
+  // cout << " curr: ";
+  // for (int x : domain) cout << x << " ";
+  // cout << "restored: ";
+  // for (int x : old) cout << x << " ";
+  // cout << endl;
   num = 0;
 
+  /*
   if (old.size() == 1) {
     num = old[0];
   }
+  */
 
   domain = old;
 }
@@ -92,6 +100,12 @@ void Tile::removeFromDomain(int val) {
   }
 }
 
+bool Tile::isInDomain(int val) {
+  for (int x : domain) {
+    if (x == val) return true;
+  }
+  return false;
+}
 void Tile::printTile() {
   cout << "Id: " << id << " Assignment: " << num << " Domain: ";
   for (int i = 0; i < (int)domain.size(); i++) {

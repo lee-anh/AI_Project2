@@ -5,6 +5,7 @@ Control::Control(string filename, puzzleType type, bool useAc3, bool useMinRemai
   this->useMinRemainingValues = useMinRemainingValues;
   this->useLeastConstrainingValue = useLeastConstrainingValue;
   this->useForwardChecking = useForwardChecking;
+  backtrackCalled = 0;
 
   if (type == STANDARD) {
     readInStandard(filename, 9);
@@ -13,32 +14,44 @@ Control::Control(string filename, puzzleType type, bool useAc3, bool useMinRemai
     if (useAc3) {
       ac3();
     }
+    backtrackingSearch();
+    printPuzzleData();
   } else if (type == OVERLAP) {
     readInStandard(filename, 15);
     addConstraintsOverlap();
+    //  printConstraintsMap();
+    // puzzle->printPuzzleData();
     printPuzzle();
+
     if (useAc3) {
       ac3();
-      printPuzzle();
+      // printPuzzle();
     }
+    backtrackingSearch();
+    printPuzzleData();
   }
 }
 
 void Control::printConstraintsMap() {
   map<string, vector<Constraint*>>::iterator it;
   for (it = constraints.begin(); it != constraints.end(); it++) {
-    // cout << "Key: " << it->first << " Values: ";
+    cout << "Key: " << it->first << " Values: ";
     for (int i = 0; i < it->second.size(); i++) {
-      // cout << ((BinaryArc*)it->second.at(i))->getTile2()->getId() << " ";
-      // cout << ((BinaryArc*)it->second.at(i))->getId2() << " ";
+      //  cout << ((BinaryArc*)it->second.at(i))->getTile2()->getId() << " ";
+      cout << ((BinaryArc*)it->second.at(i))->getId2() << " ";
     }
-    // cout << endl;
+    cout << endl;
   }
 }
 
 void Control::printPuzzle() {
   puzzle->printPuzzle();
   cout << endl;
+}
+
+void Control::printPuzzleData() {
+  cout << "# unassigned initially: " << puzzle->getInitialNumUnassigned() << endl;
+  cout << "# times backtrack called: " << backtrackCalled << endl;
 }
 
 void Control::addConstraintsStandard() {
@@ -79,24 +92,16 @@ void Control::addConstraintsOverlap() {
   // we need to think on the alldiff level as well. what are we going to do for forward checking?
   vector<vector<Tile*>> arr = puzzle->getPuzzleArr();
   // add all col constraints
-  for (int i = 0; i < (int)9; i++) {
-    // add all cols for first puzzle
-    alldiffs.push_back(new Alldiff(arr, COL, 0, i));
+  for (int i = 0; i < 9; i++) {
+    // add all cols
+    alldiffs.push_back(new Alldiff(arr, COL, 0, i));      // first
+    alldiffs.push_back(new Alldiff(arr, COL, 3, i + 3));  // second
+    alldiffs.push_back(new Alldiff(arr, COL, 6, i + 6));  // third
 
-    // add all cols for second puzzle
-    alldiffs.push_back(new Alldiff(arr, COL, 3, i + 3));
-
-    // add all cols for third puzzle
-    alldiffs.push_back(new Alldiff(arr, COL, 6, i + 6));
-
-    // add all rows for first puzzle
-    alldiffs.push_back(new Alldiff(arr, ROW, i, 0));
-
-    // add all rows for second puzzle
-    alldiffs.push_back(new Alldiff(arr, ROW, i + 3, 3));
-
-    // add all rows for third  puzzle
-    alldiffs.push_back(new Alldiff(arr, ROW, i + 6, 6));
+    // add all rows
+    alldiffs.push_back(new Alldiff(arr, ROW, i, 0));      // first
+    alldiffs.push_back(new Alldiff(arr, ROW, i + 3, 3));  // second
+    alldiffs.push_back(new Alldiff(arr, ROW, i + 6, 6));  // third
 
     for (int j = 0; j < (int)9; j++) {
       // add all the boxes
@@ -216,29 +221,30 @@ bool Control::ac3() {
 // TODO: move this back to BinaryArc?
 
 void Control::backtrackingSearch() {
-  // puzzle->printPuzzleData();
-  // cout << endl;
-  //  cout << endl;
   backtrack();
-  //  puzzle->printPuzzleData();
 }
 
 bool Control::backtrack() {
-  // cout << "backtrack called" << endl;
+  // cout << "backtrack   ";
+  backtrackCalled++;
   if (puzzle->isAssignmentComplete()) {
     puzzle->printPuzzle();
     return true;
   }
 
   Tile* var = selectUnassignedVariable();
-  // cout << "after selectUnassignedVariable" << endl;
+  // cout << "tile: " << var->getId();
+
   vector<int> domainValues = orderDomainValues(var);
-  // cout << "after orderDomainValues" << endl;
+  // cout << "|" << domainValues.size() << "|";
+
   for (int x : domainValues) {
     // if value is consistent with assignment then add {var = value to the assignment}
-    // cout << "in domainValues loop" << endl;
+
     if (checkConsistent(var->getId(), x)) {
+      // cout << "   consistent x: " << x << endl;
       assignmentHistory.push(make_pair(var->getId(), vector<int>(var->getDomain())));  // add to memory
+                                                                                       //  cout << "var id: " << var->getId() << " " << var->getDomain().size() << endl;
       var->setNum(x);
       // where should we keep the stack of inferences? here or somewhere else?
       if (useForwardChecking) {
@@ -252,6 +258,8 @@ bool Control::backtrack() {
         if (backtrack()) return true;
       }
       var->restoreDomain(vector<int>(assignmentHistory.top().second));
+      // cout << endl
+      //       << "restore var id: " << assignmentHistory.top().first << " " << assignmentHistory.top().second.size() << endl;
       assignmentHistory.pop();
     }
   }
@@ -288,6 +296,7 @@ vector<Tile*> Control::getUnassignedVariables() {
     // sort the array to return by domain size, ascending
     sort(toReturn.begin(), toReturn.end(), tileLessThan());
   }
+  // cout << "# unassigned variables: " << toReturn.size() << "    ";
   return toReturn;
 }
 
@@ -297,12 +306,24 @@ vector<int> Control::orderDomainValues(Tile* t) {
   vector<int> toReturn;
 
   vector<Constraint*> neighbors = constraints.find(t->getId())->second;
-  // more efficient way to do this
-  for (Constraint* c : neighbors) {
-    // count up how many domains it would change, do the ordering here
-    // TODO: do this
-    BinaryArc* b = (BinaryArc*)c;
+  vector<pair<int, int>> toSort;
+  for (int x : t->getDomain()) {
+    int count = 0;
+    for (Constraint* c : neighbors) {
+      // count up how many domains it would change, do the ordering here
+      // TODO: change for sum constraints
+
+      BinaryArc* b = (BinaryArc*)c;
+      if (b->getTile2()->isInDomain(x)) count++;
+    }
+    toSort.push_back(make_pair(count, x));
   }
+  sort(toSort.begin(), toSort.end());
+
+  for (pair<int, int> val : toSort) {
+    toReturn.push_back(val.second);
+  }
+
   return toReturn;
 }
 
@@ -310,17 +331,18 @@ vector<int> Control::orderDomainValues(Tile* t) {
 vector<pair<string, vector<int>>> Control::forwardCheck(Tile* t) {
   vector<Constraint*> neighbors = constraints.find(t->getId())->second;
   vector<pair<string, vector<int>>> history;
-
+  // cout << "check for " << t->getId() << " " << t->getNum() << " | ";
   for (Constraint* c : neighbors) {
     // TODO: we need to make this work for the sums too
     // why does this only sometimes work?
     BinaryArc* b = (BinaryArc*)c;
-    Tile* n = b->getTile2();
+    Tile* n = b->getTile1();
     if (n->getNum() == 0) {  // unassigned
+      // cout << n->getId() << " ";
       history.push_back(make_pair(n->getId(), vector<int>(n->getDomain())));
 
       n->removeFromDomain(t->getNum());
-      // we never really reach this
+
       if (n->getDomainSize() == 0) {  // technically we wouldn't reach this point?
         // restoreNeighborsForForwardCheck(history);
         inferenceHistory.push(history);
@@ -328,6 +350,7 @@ vector<pair<string, vector<int>>> Control::forwardCheck(Tile* t) {
       }
     }
   }
+  //  cout << endl;
 
   // add to history of changes
   inferenceHistory.push(history);
@@ -336,26 +359,14 @@ vector<pair<string, vector<int>>> Control::forwardCheck(Tile* t) {
 
 // restore from forward check?
 void Control::restoreNeighborsForForwardCheck(vector<pair<string, vector<int>>> history) {
-  // cout << "restore called" << endl;
+  //  cout << endl
+  //      << "restore: ";
   for (pair<string, vector<int>> toRestore : history) {
+    // cout << toRestore.first << " ";
     Tile* tile = puzzle->getTile(toRestore.first);
     tile->restoreDomain(vector<int>(toRestore.second));
   }
-}
-
-bool Control::isArcConsistent(BinaryArc* ba, int proposedAssignment) {
-  Tile* t2 = puzzle->getTile(ba->getId2());
-
-  int allowed = 0;
-  for (int x : t2->getDomain()) {
-    if (proposedAssignment != x) allowed++;
-  }
-
-  if (allowed == 0) {
-    // cout << "is not arc consistent" << endl;
-    return false;
-  }
-  return true;
+  //  cout << endl;
 }
 
 bool Control::checkConsistent(string tileId, int proposedAssignment) {
@@ -370,9 +381,9 @@ bool Control::checkConsistent(string tileId, int proposedAssignment) {
     Tile* n = b->getTile2();
 
     // if ((n->getNum() != 0) && (proposedAssignment == n->getNum())) return false;
-    if (!isArcConsistent((BinaryArc*)c, proposedAssignment)) {
-      return false;
-    }
+    if (!((BinaryArc*)c)->proposeAssignment(proposedAssignment)) return false;
+    // ok but why won't this work?
+    // if (!isArcConsistent((BinaryArc*)c, proposedAssignment)) return false;
   }
   return true;
 }

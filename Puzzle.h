@@ -28,6 +28,8 @@ class Puzzle {
   /// @brief check if assignment complete
   /// @return
   bool isAssignmentComplete();
+  int getInitialNumUnassigned();
+  int numUnassigned();
   void assignDomainOnes();
 
   Tile* getTile(int x, int y);
@@ -40,6 +42,7 @@ class Puzzle {
  private:
   puzzleType type;
   vector<vector<Tile*>> arr;
+  int initialNumUnassigned;
 };
 
 #endif

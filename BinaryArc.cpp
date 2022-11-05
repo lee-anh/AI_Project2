@@ -40,7 +40,14 @@ string BinaryArc::getId2() {
 }
 
 // TODO: the Constraint class should have too
+// checks arc consistency
 bool BinaryArc::proposeAssignment(int x) {
+  //  cout << "x: " << x << " " << t2->getId() << ": " << t2->getNum() << endl;
+  if ((t2->getNum() != 0) && (x == t2->getNum())) return false;
+  return true;
+}
+
+bool BinaryArc::checkIfArcConsistent(int x) {
   vector<int> domain2 = t2->getDomain();
 
   int allowed = 0;

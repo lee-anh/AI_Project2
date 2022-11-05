@@ -2,6 +2,7 @@
 
 Puzzle::Puzzle(vector<vector<Tile*>> arr) {
   this->arr = arr;
+  initialNumUnassigned = numUnassigned();
 }
 
 // deep copy constructor
@@ -17,6 +18,7 @@ Puzzle::Puzzle(Puzzle* p) {
     newTilesOuter.push_back(newTilesInner);
   }
   this->arr = newTilesOuter;
+  this->initialNumUnassigned = p->initialNumUnassigned;
 }
 
 bool Puzzle::isAssignmentComplete() {
@@ -44,6 +46,19 @@ bool Puzzle::isAssignmentComplete() {
   // puzzle length
 
   return true;
+}
+
+int Puzzle::getInitialNumUnassigned() {
+  return initialNumUnassigned;
+}
+int Puzzle::numUnassigned() {
+  int count = 0;
+  for (int i = 0; i < (int)arr.size(); i++) {
+    for (int j = 0; j < (int)arr[i].size(); j++) {
+      if (arr[i][j]->getNum() == 0) count++;
+    }
+  }
+  return count;
 }
 
 void Puzzle::assignDomainOnes() {

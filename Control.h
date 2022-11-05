@@ -22,6 +22,7 @@ class Control {
   void printConstraintsMap();
   void printPuzzle();
   void backtrackingSearch();
+  void printPuzzleData();
 
  private:
   Puzzle* puzzle;
@@ -29,6 +30,7 @@ class Control {
   bool useMinRemainingValues;
   bool useLeastConstrainingValue;
   bool useForwardChecking;
+  int backtrackCalled;
 
   // might make sense to make this a separate class?
   map<string, vector<Constraint*>> constraints;
@@ -57,8 +59,6 @@ class Control {
   bool inference(Tile* t);
   vector<pair<string, vector<int>>> forwardCheck(Tile* t);
   void restoreNeighborsForForwardCheck(vector<pair<string, vector<int>>> history);
-
-  bool isArcConsistent(BinaryArc* ba, int proposedAssignment);
 
   bool checkConsistent(string tileId, int proposedAssignment);
 };
