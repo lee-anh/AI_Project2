@@ -33,7 +33,7 @@ class Puzzle {
   void assignDomainOnes();
 
   Tile* getTile(int x, int y);
-  Tile* getTile(string id);
+  // Tile* getTile(string id);
   vector<vector<Tile*>> getPuzzleArr();
 
   void printPuzzle();

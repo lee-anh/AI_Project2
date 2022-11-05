@@ -48,9 +48,9 @@ void Tile::setNum(int toSet) {
 void Tile::restoreDomain(vector<int> old) {
   // cout << "restore for: " << id;
   // cout << " curr: ";
-  // for (int x : domain) cout << x << " ";
-  // cout << "restored: ";
-  // for (int x : old) cout << x << " ";
+  //  for (int x : domain) cout << x << " ";
+  //  cout << "restored: ";
+  //  for (int x : old) cout << x << " ";
   // cout << endl;
   num = 0;
 

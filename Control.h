@@ -34,8 +34,8 @@ class Control {
 
   // might make sense to make this a separate class?
   map<string, vector<Constraint*>> constraints;
-  stack<pair<string, vector<int>>> assignmentHistory;
-  stack<vector<pair<string, vector<int>>>> inferenceHistory;
+  stack<vector<int>> assignmentHistory;
+  stack<vector<pair<Tile*, vector<int>>>> inferenceHistory;
   // keep a stack of changes
   // a dictionary would be smart. what exactly are we changing?
 
@@ -57,8 +57,8 @@ class Control {
   // TODO: these will need special return types
   vector<int> orderDomainValues(Tile* t);
   bool inference(Tile* t);
-  vector<pair<string, vector<int>>> forwardCheck(Tile* t);
-  void restoreNeighborsForForwardCheck(vector<pair<string, vector<int>>> history);
+  vector<pair<Tile*, vector<int>>> forwardCheck(Tile* t);
+  void restoreNeighborsForForwardCheck(vector<pair<Tile*, vector<int>>> history);
 
   bool checkConsistent(string tileId, int proposedAssignment);
 };

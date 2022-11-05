@@ -74,17 +74,19 @@ void Puzzle::assignDomainOnes() {
 Tile* Puzzle::getTile(int x, int y) {
   return arr[x][y];
 }
+
+/*
 Tile* Puzzle::getTile(string id) {
-  //  cout << "before getTile" << endl;
+  // cout << "begin" << endl;
   int x = 0;
   int y = 0;
   if (id.length() == 3) {
     x = stoi(string(1, id[0]));
     y = stoi(string(1, id[2]));
   } else if (id.length() == 5) {
-    x = stoi(string(2, id[0]));
-    y = stoi(string(2, id[3]));
-  } else {
+    x = stoi(id.substr(0, 2));
+    y = stoi(id.substr(3, 2));
+  } else if (id.length() == 4) {
     int space = 0;
     for (int i = 0; i < (int)id.length(); i++) {
       if (id[i] == '-') {
@@ -94,16 +96,18 @@ Tile* Puzzle::getTile(string id) {
     }
 
     if (space == 2) {
-      x = stoi(string(2, id[0]));
-      y = stoi(string(1, id[3]));
+      x = stoi(id.substr(0, 2));
+      y = stoi(id.substr(3, 1));
     } else {
-      x = stoi(string(1, id[0]));
-      y = stoi(string(2, id[2]));
+      x = stoi(id.substr(0, 1));
+      x = stoi(id.substr(2, 2));
     }
   }
-  //  cout << "end of getTile" << endl;
+  // cout << "end" << endl;
+
   return getTile(x, y);
 }
+*/
 
 vector<vector<Tile*>> Puzzle::getPuzzleArr() {
   return arr;

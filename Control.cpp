@@ -243,8 +243,8 @@ bool Control::backtrack() {
 
     if (checkConsistent(var->getId(), x)) {
       // cout << "   consistent x: " << x << endl;
-      assignmentHistory.push(make_pair(var->getId(), vector<int>(var->getDomain())));  // add to memory
-                                                                                       //  cout << "var id: " << var->getId() << " " << var->getDomain().size() << endl;
+      assignmentHistory.push(var->getDomain());  // add to memory
+                                                 //  cout << "var id: " << var->getId() << " " << var->getDomain().size() << endl;
       var->setNum(x);
       // where should we keep the stack of inferences? here or somewhere else?
       if (useForwardChecking) {
@@ -257,7 +257,7 @@ bool Control::backtrack() {
       } else {
         if (backtrack()) return true;
       }
-      var->restoreDomain(vector<int>(assignmentHistory.top().second));
+      var->restoreDomain(assignmentHistory.top());
       // cout << endl
       //       << "restore var id: " << assignmentHistory.top().first << " " << assignmentHistory.top().second.size() << endl;
       assignmentHistory.pop();
@@ -328,18 +328,22 @@ vector<int> Control::orderDomainValues(Tile* t) {
 }
 
 // the purpose of forwardCheck is to whittle down the domains
-vector<pair<string, vector<int>>> Control::forwardCheck(Tile* t) {
+vector<pair<Tile*, vector<int>>> Control::forwardCheck(Tile* t) {
   vector<Constraint*> neighbors = constraints.find(t->getId())->second;
-  vector<pair<string, vector<int>>> history;
-  // cout << "check for " << t->getId() << " " << t->getNum() << " | ";
+  vector<pair<Tile*, vector<int>>> history;
+  //  cout << "check for " << t->getId() << " " << t->getNum() << " | ";
   for (Constraint* c : neighbors) {
     // TODO: we need to make this work for the sums too
     // why does this only sometimes work?
     BinaryArc* b = (BinaryArc*)c;
-    Tile* n = b->getTile1();
-    if (n->getNum() == 0) {  // unassigned
+    //  cout << "id1: " << b->getId1() << " id2: " << b->getId2() << endl;
+    // cout << "check: " << b->getTile1()->getId() << " check: " << b->getTile2()->getId() << endl;
+    Tile* n = b->getTile2();  // TODO: fix this to Tile1!
+    if (n->getNum() == 0) {   // unassigned
       // cout << n->getId() << " ";
-      history.push_back(make_pair(n->getId(), vector<int>(n->getDomain())));
+
+      //  history.push_back(make_pair(string(n->getId()), vector<int>(n->getDomain())));
+      history.push_back(make_pair(n, n->getDomain()));
 
       n->removeFromDomain(t->getNum());
 
@@ -358,19 +362,19 @@ vector<pair<string, vector<int>>> Control::forwardCheck(Tile* t) {
 }
 
 // restore from forward check?
-void Control::restoreNeighborsForForwardCheck(vector<pair<string, vector<int>>> history) {
-  //  cout << endl
-  //      << "restore: ";
-  for (pair<string, vector<int>> toRestore : history) {
-    // cout << toRestore.first << " ";
-    Tile* tile = puzzle->getTile(toRestore.first);
-    tile->restoreDomain(vector<int>(toRestore.second));
+void Control::restoreNeighborsForForwardCheck(vector<pair<Tile*, vector<int>>> history) {
+  // cout << endl
+  //     << "restore: ";
+  for (pair<Tile*, vector<int>> toRestore : history) {
+    Tile* tile = toRestore.first;
+    //  cout << toRestore.first->getId() << " = " << tile->getId() << " ";
+    tile->restoreDomain(toRestore.second);
   }
-  //  cout << endl;
+  // cout << endl;
 }
 
 bool Control::checkConsistent(string tileId, int proposedAssignment) {
-  // cout << "begin checkConsistent" << endl;
+  //  cout << "begin checkConsistent" << endl;
   // cout << "tileId: " << tileId << endl;
   vector<Constraint*> neighbors = constraints.find(tileId)->second;
   // cout << "after find constraints" << endl;
