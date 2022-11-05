@@ -24,6 +24,7 @@
     "stack": "cpp",
     "string": "cpp",
     "string_view": "cpp",
-    "utility": "cpp"
+    "utility": "cpp",
+    "filesystem": "cpp"
   }
 }

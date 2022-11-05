@@ -28,6 +28,7 @@ class Puzzle {
   /// @brief check if assignment complete
   /// @return
   bool isAssignmentComplete();
+  void assignDomainOnes();
 
   Tile* getTile(int x, int y);
   Tile* getTile(string id);

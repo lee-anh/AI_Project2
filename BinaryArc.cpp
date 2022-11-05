@@ -51,3 +51,10 @@ bool BinaryArc::proposeAssignment(int x) {
   if (allowed == 0) return false;
   return true;
 }
+
+bool BinaryArc::removeInconsistency() {
+  if (t1->getNum() == t2->getNum()) {
+    return false;
+  }
+  return true;
+}

@@ -10,7 +10,7 @@ Tile::Tile(int num, int x, int y) {
   } else {
     domain.push_back(num);  // the domain should just be that number
   }
-  id = to_string(x) + to_string(y);
+  id = to_string(x) + "-" + to_string(y);
 }
 
 Tile::Tile(Tile* t) {
@@ -47,7 +47,35 @@ void Tile::setNum(int toSet) {
 
 void Tile::restoreDomain(vector<int> old) {
   num = 0;
+
+  if (old.size() == 1) {
+    num = old[0];
+  }
+
   domain = old;
+}
+
+void Tile::restoreDomainNoSet(vector<int> old) {
+  num = 0;
+  domain = old;
+}
+
+bool Tile::removeFromDomainNoSet(int val) {
+  int index = -1;
+  for (int i = 0; i < (int)domain.size(); i++) {
+    if (domain[i] == val) {
+      index = i;
+      break;
+    }
+  }
+  if (index != -1) {
+    domain.erase(domain.begin() + index);
+  }
+  if (domain.size() == 0) {
+    cout << "remove from domain, now size is 0" << endl;
+    return false;
+  }
+  return true;
 }
 
 void Tile::removeFromDomain(int val) {

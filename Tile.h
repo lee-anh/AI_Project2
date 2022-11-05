@@ -20,7 +20,9 @@ class Tile {
 
   void setNum(int toSet);
   void restoreDomain(vector<int> old);
+  void restoreDomainNoSet(vector<int> old);
   void removeFromDomain(int val);
+  bool removeFromDomainNoSet(int val);
   void printTile();
 
  private:

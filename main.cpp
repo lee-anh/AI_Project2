@@ -7,15 +7,32 @@ using namespace std;
 #include "Control.h"
 
 int main(int argc, char* argv[]) {
-  Control* p = new Control("./Sudoku/standard/puzzle1.txt", STANDARD, true, true, false, true);
+  bool useAc3 = true;
+  bool useMinRemainingValues = true;
+  bool useLeastConstrainingValues = false;
+  bool useForwardChecking = false;
+  puzzleType type = OVERLAP;
 
-  //  p->printPuzzleData();
-  p->printPuzzle();
-  //  p->printConstraintsMap();
-  p->backtrackingSearch();
+  // without  forward checking
+  // Control* p = new Control("./Sudoku/standard/puzzle6.txt", STANDARD, true, true, false, false);
 
-  // p->printPuzzleData();
-  // p->printPuzzle();
+  // with forward checking
+  // Control* p = new Control("./Sudoku/standard/puzzle3.txt", STANDARD, true, true, false, true);
+  // Control* p = new Control("./Sudoku/standard/puzzle6.txt", STANDARD, true, true, false, true);
+
+  if (type == STANDARD) {
+    for (int i = 1; i < 11; i++) {
+      cout << "Puzzle " << i << "-----------------------" << endl;
+      Control* p = new Control("./Sudoku/standard/puzzle" + to_string(i) + ".txt", type, useAc3, useMinRemainingValues, useLeastConstrainingValues, useForwardChecking);
+      p->backtrackingSearch();
+    }
+  } else if (type == OVERLAP) {
+    for (int i = 5; i < 7; i++) {
+      cout << "Puzzle " << i << "-----------------------" << endl;
+      Control* p = new Control("./Sudoku/overlap/puzzle" + to_string(i) + ".txt", OVERLAP, useAc3, useMinRemainingValues, useLeastConstrainingValues, useForwardChecking);
+      p->backtrackingSearch();
+    }
+  }
 
   return 0;
 }
