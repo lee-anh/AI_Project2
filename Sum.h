@@ -12,8 +12,8 @@ using namespace std;
 class Sum : public Constraint {
   Sum(int targetSum, vector<Tile*> tiles);
   int getTargetSum();
-  vector<Tile*> getTile();
-  bool proposeAssignment(Tile* t, int x);
+  vector<Tile*> getTiles();
+  bool proposeAssignment(string tileId, int x);
 
  private:
   int targetSum;

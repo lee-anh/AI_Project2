@@ -8,9 +8,11 @@ using namespace std;
 class Constraint {
  public:
   // what would a Constraint need?
-  // virtual bool proposeAssignment(int x);
-  Constraint();
-  // bool revise();  // revise the domains of the variables involved in the constraint
+
+  virtual bool proposeAssignment(string tileId, int proposal);
+  virtual bool willChangeDomainOfOtherTiles(string tileId, int x);
+  virtual void removeFromDomainOfOtherTiles(string tileId, int x);
+ 
 };
 
 #endif

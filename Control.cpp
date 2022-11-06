@@ -9,7 +9,8 @@ Control::Control(string filename, puzzleType type, bool useAc3, bool useMinRemai
 
   if (type == STANDARD) {
     readInStandard(filename, 9);
-    addConstraintsStandard();
+    constraints = new CSP(puzzle);
+    constraints->addConstraintsStandard();
     puzzle->printPuzzle();
     if (useAc3) {
       ac3();
@@ -18,11 +19,8 @@ Control::Control(string filename, puzzleType type, bool useAc3, bool useMinRemai
     printPuzzleData();
   } else if (type == OVERLAP) {
     readInStandard(filename, 15);
-    addConstraintsOverlap();
-    //  printConstraintsMap();
-    // puzzle->printPuzzleData();
-    puzzle->printPuzzle();
-
+    constraints = new CSP(puzzle);
+    constraints->addConstraintsOverlap();
     if (useAc3) {
       ac3();
       // printPuzzle();
@@ -31,124 +29,15 @@ Control::Control(string filename, puzzleType type, bool useAc3, bool useMinRemai
     printPuzzleData();
   } else if (type == KILLER) {
     readInKiller(filename);
+    constraints = new CSP(puzzle);
     puzzle->printPuzzle();
     solution->printPuzzle();
-  }
-}
-
-void Control::printConstraintsMap() {
-  map<string, vector<Constraint*>>::iterator it;
-  for (it = constraints.begin(); it != constraints.end(); it++) {
-    cout << "Key: " << it->first << " Values: ";
-    for (int i = 0; i < it->second.size(); i++) {
-      //  cout << ((BinaryArc*)it->second.at(i))->getTile2()->getId() << " ";
-      cout << ((BinaryArc*)it->second.at(i))->getId2() << " ";
-    }
-    cout << endl;
   }
 }
 
 void Control::printPuzzleData() {
   cout << "# unassigned initially: " << puzzle->getInitialNumUnassigned() << endl;
   cout << "# times backtrack called: " << backtrackCalled << endl;
-}
-
-void Control::addConstraintsStandard() {
-  vector<Alldiff*> alldiffs;
-
-  // we need to think on the alldiff level as well. what are we going to do for forward checking?
-  vector<vector<Tile*>> arr = puzzle->getPuzzleArr();
-  // add all col constraints
-  for (int i = 0; i < (int)arr.size(); i++) {
-    // add all cols
-
-    alldiffs.push_back(new Alldiff(arr, COL, 0, i));
-    // add all rows
-
-    alldiffs.push_back(new Alldiff(arr, ROW, i, 0));
-
-    for (int j = 0; j < (int)arr[i].size(); j++) {
-      // add all the boxes
-      if (i % 3 == 0 && j % 3 == 0) {  // we need to get the right position
-        alldiffs.push_back(new Alldiff(arr, BOX, i, j));
-      }
-    }
-  }
-  // cout << "num alldiffs: " << alldiffs.size() << " should be 27" << endl;
-
-  // convert them all to binaries
-  for (int i = 0; i < (int)alldiffs.size(); i++) {
-    vector<pair<string, BinaryArc*>> toAdd = alldiffs[i]->toBinaryArcs();
-    for (int j = 0; j < (int)toAdd.size(); j++) {
-      addToMap(toAdd[j]);  // add all the constraints to the map
-    }
-  }
-}
-
-void Control::addConstraintsOverlap() {
-  vector<Alldiff*> alldiffs;
-
-  // we need to think on the alldiff level as well. what are we going to do for forward checking?
-  vector<vector<Tile*>> arr = puzzle->getPuzzleArr();
-  // add all col constraints
-  for (int i = 0; i < 9; i++) {
-    // add all cols
-    alldiffs.push_back(new Alldiff(arr, COL, 0, i));      // first
-    alldiffs.push_back(new Alldiff(arr, COL, 3, i + 3));  // second
-    alldiffs.push_back(new Alldiff(arr, COL, 6, i + 6));  // third
-
-    // add all rows
-    alldiffs.push_back(new Alldiff(arr, ROW, i, 0));      // first
-    alldiffs.push_back(new Alldiff(arr, ROW, i + 3, 3));  // second
-    alldiffs.push_back(new Alldiff(arr, ROW, i + 6, 6));  // third
-
-    for (int j = 0; j < (int)9; j++) {
-      // add all the boxes
-      if (i % 3 == 0 && j % 3 == 0) {  // we need to get the right position
-        alldiffs.push_back(new Alldiff(arr, BOX, i, j));
-      }
-    }
-  }
-
-  // add the remaining boxes
-  alldiffs.push_back(new Alldiff(arr, BOX, 3, 9));
-  alldiffs.push_back(new Alldiff(arr, BOX, 6, 9));
-  alldiffs.push_back(new Alldiff(arr, BOX, 9, 9));
-  alldiffs.push_back(new Alldiff(arr, BOX, 12, 9));
-  alldiffs.push_back(new Alldiff(arr, BOX, 9, 3));
-  alldiffs.push_back(new Alldiff(arr, BOX, 9, 6));
-  alldiffs.push_back(new Alldiff(arr, BOX, 6, 12));
-  alldiffs.push_back(new Alldiff(arr, BOX, 9, 12));
-  alldiffs.push_back(new Alldiff(arr, BOX, 12, 12));
-  alldiffs.push_back(new Alldiff(arr, BOX, 12, 6));
-
-  // convert them all to binaries
-  for (int i = 0; i < (int)alldiffs.size(); i++) {
-    vector<pair<string, BinaryArc*>> toAdd = alldiffs[i]->toBinaryArcs();
-    for (int j = 0; j < (int)toAdd.size(); j++) {
-      addToMap(toAdd[j]);  // add all the constraints to the map
-    }
-  }
-}
-
-void Control::addToMap(pair<string, BinaryArc*> toAdd) {
-  map<string, vector<Constraint*>>::iterator it = constraints.find(toAdd.first);
-  if (it != constraints.end()) {
-    for (Constraint* c : it->second) {
-      BinaryArc* b = (BinaryArc*)c;
-      // do not allow duplicates
-      if ((b->getId1() == toAdd.second->getId1()) && (b->getId2() == toAdd.second->getId2())) {
-        return;
-      }
-    }
-    it->second.push_back(toAdd.second);
-
-    return;
-  }
-  // add the key to the map
-  vector<Constraint*> temp;
-  temp.push_back(toAdd.second);
-  constraints.insert(make_pair(toAdd.first, temp));
 }
 
 void Control::readInStandard(string filename, int side) {
@@ -225,8 +114,10 @@ void Control::readInKiller(string filename) {
 
 bool Control::ac3() {
   queue<BinaryArc*> q;  // add all the arcs to the queue
+  map<string, vector<Constraint*>> constraintMap = constraints->getMap();
   map<string, vector<Constraint*>>::iterator it;
-  for (it = constraints.begin(); it != constraints.end(); it++) {
+
+  for (it = constraintMap.begin(); it != constraintMap.end(); it++) {
     for (int i = 0; i < it->second.size(); i++) {
       q.push(((BinaryArc*)it->second.at(i)));
     }
@@ -238,7 +129,7 @@ bool Control::ac3() {
     if (a->revise()) {
       if (a->getTile1()->getDomainSize() == 0) return false;
       // for each Xk in Xi.Neighbors - Xj, do add (Xk, Xi) to queue
-      vector<Constraint*> neighbors = constraints.find(a->getId1())->second;
+      vector<Constraint*> neighbors = constraintMap.find(a->getId1())->second;
       for (Constraint* c : neighbors) {
         BinaryArc* b = (BinaryArc*)c;  // hopefully everything should be ok with the casting
         if (b->getId2() != a->getId2()) {
@@ -331,7 +222,7 @@ vector<int> Control::orderDomainValues(Tile* t) {
   if (!useLeastConstrainingValue) return t->getDomain();
   vector<int> toReturn;
 
-  vector<Constraint*> neighbors = constraints.find(t->getId())->second;
+  vector<Constraint*> neighbors = constraints->findConstraints(t->getId());
   vector<pair<int, int>> toSort;
   for (int x : t->getDomain()) {
     int count = 0;
@@ -340,6 +231,7 @@ vector<int> Control::orderDomainValues(Tile* t) {
       // TODO: change for sum constraints
 
       BinaryArc* b = (BinaryArc*)c;
+      // willChangeDomainOfOtherTiles
       if (b->getTile2()->isInDomain(x)) count++;
     }
     toSort.push_back(make_pair(count, x));
@@ -355,7 +247,7 @@ vector<int> Control::orderDomainValues(Tile* t) {
 
 // the purpose of forwardCheck is to whittle down the domains
 vector<pair<Tile*, vector<int>>> Control::forwardCheck(Tile* t) {
-  vector<Constraint*> neighbors = constraints.find(t->getId())->second;
+  vector<Constraint*> neighbors = constraints->findConstraints(t->getId());
   vector<pair<Tile*, vector<int>>> history;
   //  cout << "check for " << t->getId() << " " << t->getNum() << " | ";
   for (Constraint* c : neighbors) {
@@ -370,7 +262,7 @@ vector<pair<Tile*, vector<int>>> Control::forwardCheck(Tile* t) {
 
       //  history.push_back(make_pair(string(n->getId()), vector<int>(n->getDomain())));
       history.push_back(make_pair(n, n->getDomain()));
-
+      // TODO: removeFromDomainOfOtherTiles 
       n->removeFromDomain(t->getNum());
 
       if (n->getDomainSize() == 0) {  // technically we wouldn't reach this point?
@@ -402,7 +294,7 @@ void Control::restoreNeighborsForForwardCheck(vector<pair<Tile*, vector<int>>> h
 bool Control::checkConsistent(string tileId, int proposedAssignment) {
   //  cout << "begin checkConsistent" << endl;
   // cout << "tileId: " << tileId << endl;
-  vector<Constraint*> neighbors = constraints.find(tileId)->second;
+  vector<Constraint*> neighbors = constraints->findConstraints(tileId);
   // cout << "after find constraints" << endl;
   for (Constraint* c : neighbors) {
     // TODO: make this work for sum constraint too

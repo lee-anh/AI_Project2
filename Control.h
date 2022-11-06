@@ -5,6 +5,7 @@
 #include <queue>
 #include <stack>
 
+#include "CSP.h"
 #include "Puzzle.h"
 
 using namespace std;
@@ -32,16 +33,12 @@ class Control {
   bool useForwardChecking;
   int backtrackCalled;
 
-  // might make sense to make this a separate class?
-  map<string, vector<Constraint*>> constraints;
+  CSP* constraints;
 
-  // stack of changes==
+  // stack of changes
   stack<vector<int>> assignmentHistory;
   stack<vector<pair<Tile*, vector<int>>>> inferenceHistory;
 
-  void addConstraintsStandard();
-  void addConstraintsOverlap();
-  void addToMap(pair<string, BinaryArc*> toAdd);
   void readInStandard(string filename, int side);
   void readInKiller(string filename);
   // only used for ac-3, which is only called once

@@ -122,4 +122,15 @@ void CSP::addSumToToMap(pair<string, Sum*> toAdd) {
 }
 
 void CSP::printMap() {
+  /*
+  map<string, vector<Constraint*>>::iterator it;
+  for (it = constraints.begin(); it != constraints.end(); it++) {
+    cout << "Key: " << it->first << " Values: ";
+    for (int i = 0; i < it->second.size(); i++) {
+      //  cout << ((BinaryArc*)it->second.at(i))->getTile2()->getId() << " ";
+      cout << ((BinaryArc*)it->second.at(i))->getId2() << " ";
+    }
+    cout << endl;
+  }
+  */
 }

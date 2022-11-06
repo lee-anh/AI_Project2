@@ -80,6 +80,7 @@ void Puzzle::printPuzzle() {
       if (arr.size() == 15) cout << "-------------------------------------" << endl;
     }
   }
+  cout << endl;
 }
 
 void Puzzle::printPuzzleData() {
