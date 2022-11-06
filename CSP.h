@@ -21,9 +21,9 @@ class CSP {
   vector<Constraint*> findConstraints(string tileId);
   void addConstraintsStandard();
   void addConstraintsOverlap();
-  void addBinaryArcToMap(pair<string, BinaryArc*> toAdd);
-  void addSumConstraintsToMap(vector<Sum*> sums);
-  void addSumToMap(pair<string, Sum*> toAdd);
+  void addBinaryArcToMap(pair<string, Constraint*> toAdd);
+  void addSumConstraintsToMap(vector<Constraint*> sums);
+  void addSumToMap(pair<string, Constraint*> toAdd);
   void printMap();
 
  private:

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 
-#include "BinaryArc.h"
+#include "Constraint.h"
 #include "Tile.h"
 #include "macros.h"
 
@@ -15,7 +15,7 @@ class Alldiff {
   // need a Puzzle, a setting, and the starting tile's coordinate
   Alldiff(vector<vector<Tile*>> pArr, group g, int x, int y);  // don't need to do any thing
 
-  vector<pair<string, BinaryArc*>> toBinaryArcs();
+  vector<pair<string, Constraint*>> toBinaryArcs();
 
   // these vals are in the domain
   // so we would want to see if adding a certain val for a certain variable would be ok

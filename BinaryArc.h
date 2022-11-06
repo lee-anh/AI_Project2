@@ -3,14 +3,13 @@
 
 #include <iostream>
 
-#include "Constraint.h"
 #include "Tile.h"
 
 using namespace std;
 
 // I guess we want this to be a constraint
 // but eventually we'll also want some arcs
-class BinaryArc : virtual public Constraint {
+class BinaryArc {
  public:
   BinaryArc(Tile* t1, Tile* t2);
   BinaryArc(int targetSum, vector<Tile*> tiles);

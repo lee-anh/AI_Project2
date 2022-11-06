@@ -16,14 +16,14 @@ Alldiff::Alldiff(vector<vector<Tile*>> pArr, group g, int x, int y) {
 
 // maybe we need to return a pair
 // maybe we could add it straight to the Map
-vector<pair<string, BinaryArc*>> Alldiff::toBinaryArcs() {
+vector<pair<string, Constraint*>> Alldiff::toBinaryArcs() {
   // where are we going to add these binaries to? // we might have to handle that a level up
   // make sure to add in both directions
-  vector<pair<string, BinaryArc*>> toReturn;
+  vector<pair<string, Constraint*>> toReturn;
   for (int i = 0; i < 9; i++) {  // I think these bounds are right
     for (int j = 0; j < 9; j++) {
       if (i != j) {
-        pair<string, BinaryArc*> toAdd = make_pair(arr[i]->getId(), new BinaryArc(arr[i], arr[j]));
+        pair<string, Constraint*> toAdd = make_pair(arr[i]->getId(), new Constraint(arr[i], arr[j]));
         toReturn.push_back(toAdd);
       }
     }

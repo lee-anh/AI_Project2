@@ -4,12 +4,11 @@
 #include <iostream>
 #include <vector>
 
-#include "Constraint.h"
 #include "Tile.h"
 
 using namespace std;
 
-class Sum : virtual public Constraint {
+class Sum {
  public:
   Sum(Tile* t1, Tile* t2);
   Sum(int targetSum, vector<Tile*> tiles);

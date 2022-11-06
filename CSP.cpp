@@ -35,7 +35,7 @@ void CSP::addConstraintsStandard() {
 
   // convert them all to binaries
   for (int i = 0; i < (int)alldiffs.size(); i++) {
-    vector<pair<string, BinaryArc*>> toAdd = alldiffs[i]->toBinaryArcs();
+    vector<pair<string, Constraint*>> toAdd = alldiffs[i]->toBinaryArcs();
     for (int j = 0; j < (int)toAdd.size(); j++) {
       addBinaryArcToMap(toAdd[j]);  // add all the constraints to the map
     }
@@ -81,14 +81,14 @@ void CSP::addConstraintsOverlap() {
 
   // convert them all to binaries
   for (int i = 0; i < (int)alldiffs.size(); i++) {
-    vector<pair<string, BinaryArc*>> toAdd = alldiffs[i]->toBinaryArcs();
+    vector<pair<string, Constraint*>> toAdd = alldiffs[i]->toBinaryArcs();
     for (int j = 0; j < (int)toAdd.size(); j++) {
       addBinaryArcToMap(toAdd[j]);  // add all the constraints to the map
     }
   }
 }
 
-void CSP::addBinaryArcToMap(pair<string, BinaryArc*> toAdd) {
+void CSP::addBinaryArcToMap(pair<string, Constraint*> toAdd) {
   map<string, vector<Constraint*>>::iterator it = constraints.find(toAdd.first);
   if (it != constraints.end()) {
     // TODO: put this back in
@@ -112,8 +112,8 @@ void CSP::addBinaryArcToMap(pair<string, BinaryArc*> toAdd) {
   constraints.insert(make_pair(toAdd.first, temp));
 }
 
-void CSP::addSumConstraintsToMap(vector<Sum*> sums) {
-  for (Sum* s : sums) {
+void CSP::addSumConstraintsToMap(vector<Constraint*> sums) {
+  for (Constraint* s : sums) {
     cout << "s size " << s->getTiles().size() << endl;
     for (Tile* t : s->getTiles()) {
       addSumToMap(make_pair(t->getId(), s));
@@ -121,7 +121,7 @@ void CSP::addSumConstraintsToMap(vector<Sum*> sums) {
   }
 }
 
-void CSP::addSumToMap(pair<string, Sum*> toAdd) {
+void CSP::addSumToMap(pair<string, Constraint*> toAdd) {
   map<string, vector<Constraint*>>::iterator it = constraints.find(toAdd.first);
   if (it != constraints.end()) {
     it->second.push_back(toAdd.second);

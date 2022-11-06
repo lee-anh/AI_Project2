@@ -340,7 +340,7 @@ bool Control::checkConsistent(string tileId, int proposedAssignment) {
   return true;
 }
 
-Sum* Control::createSumHelper(vector<int> tiles) {
+Constraint* Control::createSumHelper(vector<int> tiles) {
   int runningSum = 0;
   vector<Tile*> toPass;
   for (int x : tiles) {
@@ -350,5 +350,5 @@ Sum* Control::createSumHelper(vector<int> tiles) {
     runningSum += solution->getTile(row, col)->getNum();
   }
   cout << "total sum: " << runningSum << endl;
-  return new Sum(runningSum, toPass);
+  return new Constraint(runningSum, toPass);
 }

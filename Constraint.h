@@ -4,23 +4,28 @@
 #include <iostream>
 #include <vector>
 
+#include "BinaryArc.h"
+#include "Sum.h"
 #include "Tile.h"
 using namespace std;
 
 class Constraint {
  public:
-  Constraint();
-  ~Constraint();
   Constraint(int targetSum, vector<Tile*> tiles);
   Constraint(Tile* t1, Tile* t2);
 
-  pair<int, int> virtual getTile1() = 0;
-  pair<int, int> virtual getTile2() = 0;
-  vector<Tile*> virtual getTiles() = 0;
-  bool virtual revise() = 0;
-  bool virtual proposeAssignment(string tileId, int x) = 0;
-  bool virtual willChangeDomainOfOtherTiles(string tileId, int x) = 0;
-  vector<pair<Tile*, vector<int>>> virtual removeFromDomainOfOtherTiles(string tileId, int x) = 0;
+  pair<int, int> getTile1();
+  pair<int, int> getTile2();
+  vector<Tile*> getTiles();
+  bool revise();
+  bool proposeAssignment(string tileId, int x);
+  bool willChangeDomainOfOtherTiles(string tileId, int x);
+  vector<pair<Tile*, vector<int>>> removeFromDomainOfOtherTiles(string tileId, int x);
+
+ private:
+  bool isBinary;
+  Sum* s; 
+  BinaryArc* b; 
 };
 
 #endif

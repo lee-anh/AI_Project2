@@ -19,16 +19,16 @@ Alldiff.o: Alldiff.cpp Alldiff.h Tile.h macros.h
 BinaryArc.o: BinaryArc.cpp BinaryArc.h Tile.h 
 	$(CC) $(CFLAGS) -c BinaryArc.cpp 
 
-Constraint.o: Constraint.cpp Constraint.h 
+Constraint.o: Constraint.cpp Constraint.h BinaryArc.h Sum.h 
 	$(CC) $(CFLAGS) -c Constraint.cpp 
 
-Control.o: Control.cpp Control.h CSP.h Puzzle.h 
+Control.o: Control.cpp Control.h CSP.h Puzzle.h Constraint.h 
 	$(CC) $(CFLAGS) -c Control.cpp 
 
 CSP.o: CSP.cpp CSP.h Alldiff.h BinaryArc.h Constraint.h Puzzle.h Tile.h 
 	$(CC) $(CFLAGS) -c CSP.cpp 
 
-Puzzle.o: Puzzle.cpp Puzzle.h Alldiff.h BinaryArc.h Constraint.h Tile.h macros.h 
+Puzzle.o: Puzzle.cpp Puzzle.h Alldiff.h Constraint.h Tile.h macros.h 
 	$(CC) $(CFLAGS) -c Puzzle.cpp
 
 Sum.o: Sum.cpp Sum.h 

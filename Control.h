@@ -6,6 +6,7 @@
 #include <stack>
 
 #include "CSP.h"
+#include "Constraint.h"
 #include "Puzzle.h"
 
 using namespace std;
@@ -39,13 +40,13 @@ class Control {
   stack<vector<int>> assignmentHistory;
   stack<vector<vector<pair<Tile*, vector<int>>>>> inferenceHistory;
 
-  vector<Sum*> sumConstraints;
+  vector<Constraint*> sumConstraints;
 
   void readInStandard(string filename, int side);
   void readInKiller(string filename);
   // only used for ac-3, which is only called once
   bool ac3();
-  bool revise(BinaryArc* ba);
+
   // we want to keep the changes
 
   // backtracking stuff
@@ -62,7 +63,7 @@ class Control {
 
   bool checkConsistent(string tileId, int proposedAssignment);
 
-  Sum* createSumHelper(vector<int> tiles);
+  Constraint* createSumHelper(vector<int> tiles);
 };
 
 #endif
