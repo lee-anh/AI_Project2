@@ -91,10 +91,13 @@ void CSP::addConstraintsOverlap() {
 void CSP::addBinaryArcToMap(pair<string, BinaryArc*> toAdd) {
   map<string, vector<Constraint*>>::iterator it = constraints.find(toAdd.first);
   if (it != constraints.end()) {
+    // TODO: put this back in
+
     for (Constraint* c : it->second) {
-      BinaryArc* b = (BinaryArc*)c;
+      //  BinaryArc* b = (BinaryArc*)c;
       // do not allow duplicates
-      if ((b->getId1() == toAdd.second->getId1()) && (b->getId2() == toAdd.second->getId2())) {
+      // if ((b->getId1() == toAdd.second->getId1()) && (b->getId2() == toAdd.second->getId2())) {
+      if ((puzzle->getTile(c->getTile1())->getId() == puzzle->getTile(toAdd.second->getTile1())->getId()) && (puzzle->getTile(c->getTile2())->getId() == puzzle->getTile(toAdd.second->getTile2())->getId())) {
         return;
       }
     }
@@ -102,13 +105,23 @@ void CSP::addBinaryArcToMap(pair<string, BinaryArc*> toAdd) {
 
     return;
   }
+
   // add the key to the map
   vector<Constraint*> temp;
   temp.push_back(toAdd.second);
   constraints.insert(make_pair(toAdd.first, temp));
 }
 
-void CSP::addSumToToMap(pair<string, Sum*> toAdd) {
+void CSP::addSumConstraintsToMap(vector<Sum*> sums) {
+  for (Sum* s : sums) {
+    cout << "s size " << s->getTiles().size() << endl;
+    for (Tile* t : s->getTiles()) {
+      addSumToMap(make_pair(t->getId(), s));
+    }
+  }
+}
+
+void CSP::addSumToMap(pair<string, Sum*> toAdd) {
   map<string, vector<Constraint*>>::iterator it = constraints.find(toAdd.first);
   if (it != constraints.end()) {
     it->second.push_back(toAdd.second);
@@ -122,15 +135,13 @@ void CSP::addSumToToMap(pair<string, Sum*> toAdd) {
 }
 
 void CSP::printMap() {
-  /*
   map<string, vector<Constraint*>>::iterator it;
   for (it = constraints.begin(); it != constraints.end(); it++) {
     cout << "Key: " << it->first << " Values: ";
     for (int i = 0; i < it->second.size(); i++) {
       //  cout << ((BinaryArc*)it->second.at(i))->getTile2()->getId() << " ";
-      cout << ((BinaryArc*)it->second.at(i))->getId2() << " ";
+      cout << (puzzle->getTile(it->second.at(i)->getTile2()))->getId() << " ";
     }
     cout << endl;
   }
-  */
 }

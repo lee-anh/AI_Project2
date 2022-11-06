@@ -11,9 +11,11 @@ Control::Control(string filename, puzzleType type, bool useAc3, bool useMinRemai
     readInStandard(filename, 9);
     constraints = new CSP(puzzle);
     constraints->addConstraintsStandard();
+    constraints->printMap();
     puzzle->printPuzzle();
     if (useAc3) {
       ac3();
+      puzzle->printPuzzle();
     }
     backtrackingSearch();
     printPuzzleData();
@@ -31,7 +33,17 @@ Control::Control(string filename, puzzleType type, bool useAc3, bool useMinRemai
     readInKiller(filename);
     constraints = new CSP(puzzle);
     puzzle->printPuzzle();
-    solution->printPuzzle();
+    if (useAc3) {
+      ac3();
+      // printPuzzle();
+    }
+    cout << "before add SumConstraints to Map" << endl;
+    constraints->addSumConstraintsToMap(sumConstraints);
+    cout << "after add SumConstraints to Map" << endl;
+
+    backtrackingSearch();
+    // now we can use the sums
+    puzzle->printPuzzle();
   }
 }
 
@@ -108,32 +120,42 @@ void Control::readInKiller(string filename) {
   }
 
   // now time to read in the sum constraints
+  string sumLine;
+  while (getline(myFile, sumLine)) {
+    int tileNum;
+    stringstream lineStream(sumLine);
+    vector<int> tiles;
+    while (lineStream >> tileNum) {
+      tiles.push_back(tileNum);
+    }
+    sumConstraints.push_back(createSumHelper(tiles));
+  }
 
   myFile.close();
 }
 
 bool Control::ac3() {
-  queue<BinaryArc*> q;  // add all the arcs to the queue
+  queue<Constraint*> q;  // add all the arcs to the queue
   map<string, vector<Constraint*>> constraintMap = constraints->getMap();
   map<string, vector<Constraint*>>::iterator it;
 
   for (it = constraintMap.begin(); it != constraintMap.end(); it++) {
     for (int i = 0; i < it->second.size(); i++) {
-      q.push(((BinaryArc*)it->second.at(i)));
+      q.push(it->second.at(i));
     }
   }
 
   while (!q.empty()) {
-    BinaryArc* a = q.front();
+    Constraint* a = q.front();
     q.pop();
     if (a->revise()) {
-      if (a->getTile1()->getDomainSize() == 0) return false;
+      if (puzzle->getTile(a->getTile1())->getDomainSize() == 0) return false;
       // for each Xk in Xi.Neighbors - Xj, do add (Xk, Xi) to queue
-      vector<Constraint*> neighbors = constraintMap.find(a->getId1())->second;
+      vector<Constraint*> neighbors = constraintMap.find(puzzle->getTile(a->getTile1())->getId())->second;
       for (Constraint* c : neighbors) {
-        BinaryArc* b = (BinaryArc*)c;  // hopefully everything should be ok with the casting
-        if (b->getId2() != a->getId2()) {
-          q.push(b);
+        // BinaryArc* b = (BinaryArc*)c;  // hopefully everything should be ok with the casting
+        if (puzzle->getTile(c->getTile2())->getId() != puzzle->getTile(a->getTile2())->getId()) {
+          q.push(c);
         }
       }
     }
@@ -230,9 +252,10 @@ vector<int> Control::orderDomainValues(Tile* t) {
       // count up how many domains it would change, do the ordering here
       // TODO: change for sum constraints
 
-      BinaryArc* b = (BinaryArc*)c;
+      //  BinaryArc* b = (BinaryArc*)c;
       // willChangeDomainOfOtherTiles
-      if (b->getTile2()->isInDomain(x)) count++;
+      if (c->willChangeDomainOfOtherTiles(t->getId(), x)) count++;
+      // if (b->getTile2()->isInDomain(x)) count++;
     }
     toSort.push_back(make_pair(count, x));
   }
@@ -246,23 +269,27 @@ vector<int> Control::orderDomainValues(Tile* t) {
 }
 
 // the purpose of forwardCheck is to whittle down the domains
-vector<pair<Tile*, vector<int>>> Control::forwardCheck(Tile* t) {
+vector<vector<pair<Tile*, vector<int>>>> Control::forwardCheck(Tile* t) {
   vector<Constraint*> neighbors = constraints->findConstraints(t->getId());
-  vector<pair<Tile*, vector<int>>> history;
+  vector<vector<pair<Tile*, vector<int>>>> history;
   //  cout << "check for " << t->getId() << " " << t->getNum() << " | ";
   for (Constraint* c : neighbors) {
     // TODO: we need to make this work for the sums too
     // why does this only sometimes work?
-    BinaryArc* b = (BinaryArc*)c;
+    // BinaryArc* b = (BinaryArc*)c;
     //  cout << "id1: " << b->getId1() << " id2: " << b->getId2() << endl;
     // cout << "check: " << b->getTile1()->getId() << " check: " << b->getTile2()->getId() << endl;
-    Tile* n = b->getTile2();
+    // Tile* n = b->getTile2();
+    // TODO: removeFromDomainOfOtherTiles
+    history.push_back(c->removeFromDomainOfOtherTiles(t->getId(), t->getNum()));
+
+    /*
     if (n->getNum() == 0) {  // unassigned
       // cout << n->getId() << " ";
 
       //  history.push_back(make_pair(string(n->getId()), vector<int>(n->getDomain())));
       history.push_back(make_pair(n, n->getDomain()));
-      // TODO: removeFromDomainOfOtherTiles 
+
       n->removeFromDomain(t->getNum());
 
       if (n->getDomainSize() == 0) {  // technically we wouldn't reach this point?
@@ -271,6 +298,7 @@ vector<pair<Tile*, vector<int>>> Control::forwardCheck(Tile* t) {
         return history;
       }
     }
+    */
   }
   //  cout << endl;
 
@@ -280,13 +308,16 @@ vector<pair<Tile*, vector<int>>> Control::forwardCheck(Tile* t) {
 }
 
 // restore from forward check?
-void Control::restoreNeighborsForForwardCheck(vector<pair<Tile*, vector<int>>> history) {
+void Control::restoreNeighborsForForwardCheck(vector<vector<pair<Tile*, vector<int>>>> history) {
   // cout << endl
   //     << "restore: ";
-  for (pair<Tile*, vector<int>> toRestore : history) {
-    Tile* tile = toRestore.first;
-    //  cout << toRestore.first->getId() << " = " << tile->getId() << " ";
-    tile->restoreDomain(toRestore.second);
+
+  for (vector<pair<Tile*, vector<int>>> toRestore : history) {
+    for (pair<Tile*, vector<int>> x : toRestore) {
+      Tile* tile = x.first;
+      //  cout << toRestore.first->getId() << " = " << tile->getId() << " ";
+      tile->restoreDomain(x.second);
+    }
   }
   // cout << endl;
 }
@@ -299,13 +330,25 @@ bool Control::checkConsistent(string tileId, int proposedAssignment) {
   for (Constraint* c : neighbors) {
     // TODO: make this work for sum constraint too
     // we have to check it with the currently assigned things
-    BinaryArc* b = (BinaryArc*)c;
-    Tile* n = b->getTile2();
+    //  BinaryArc* b = (BinaryArc*)c;
+    //   Tile* n = b->getTile2();
 
     // if ((n->getNum() != 0) && (proposedAssignment == n->getNum())) return false;
-    if (!((BinaryArc*)c)->proposeAssignment(proposedAssignment)) return false;
-    // ok but why won't this work?
-    // if (!isArcConsistent((BinaryArc*)c, proposedAssignment)) return false;
+    // if (!((BinaryArc*)c)->proposeAssignment(proposedAssignment)) return false;
+    if (!(c->proposeAssignment(tileId, proposedAssignment))) return false;
   }
   return true;
+}
+
+Sum* Control::createSumHelper(vector<int> tiles) {
+  int runningSum = 0;
+  vector<Tile*> toPass;
+  for (int x : tiles) {
+    int row = x / 9;
+    int col = x % 9;
+    toPass.push_back(puzzle->getTile(row, col));
+    runningSum += solution->getTile(row, col)->getNum();
+  }
+  cout << "total sum: " << runningSum << endl;
+  return new Sum(runningSum, toPass);
 }

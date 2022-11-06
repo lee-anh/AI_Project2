@@ -11,6 +11,7 @@ Tile::Tile(int num, int x, int y) {
     domain.push_back(num);  // the domain should just be that number
   }
   id = to_string(x) + "-" + to_string(y);
+  coordinates = make_pair(x, y);
 }
 
 Tile::Tile(Tile* t) {
@@ -36,6 +37,9 @@ int Tile::getNum() {
   return num;
 }
 
+pair<int, int> Tile::getCoordinates() {
+  return coordinates;
+}
 void Tile::setNum(int toSet) {
   // make sure that the assignment is not zero?
   if (num != 0) return;  // number is already set

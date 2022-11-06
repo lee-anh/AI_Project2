@@ -57,6 +57,9 @@ Tile* Puzzle::getTile(int x, int y) {
   return arr[x][y];
 }
 
+Tile* Puzzle::getTile(pair<int, int> coordinate) {
+  return arr[coordinate.first][coordinate.second];
+}
 vector<vector<Tile*>> Puzzle::getPuzzleArr() {
   return arr;
 }

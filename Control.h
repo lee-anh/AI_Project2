@@ -37,7 +37,9 @@ class Control {
 
   // stack of changes
   stack<vector<int>> assignmentHistory;
-  stack<vector<pair<Tile*, vector<int>>>> inferenceHistory;
+  stack<vector<vector<pair<Tile*, vector<int>>>>> inferenceHistory;
+
+  vector<Sum*> sumConstraints;
 
   void readInStandard(string filename, int side);
   void readInKiller(string filename);
@@ -55,10 +57,12 @@ class Control {
   // TODO: these will need special return types
   vector<int> orderDomainValues(Tile* t);
   bool inference(Tile* t);
-  vector<pair<Tile*, vector<int>>> forwardCheck(Tile* t);
-  void restoreNeighborsForForwardCheck(vector<pair<Tile*, vector<int>>> history);
+  vector<vector<pair<Tile*, vector<int>>>> forwardCheck(Tile* t);
+  void restoreNeighborsForForwardCheck(vector<vector<pair<Tile*, vector<int>>>> history);
 
   bool checkConsistent(string tileId, int proposedAssignment);
+
+  Sum* createSumHelper(vector<int> tiles);
 };
 
 #endif

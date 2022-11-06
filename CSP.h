@@ -22,7 +22,8 @@ class CSP {
   void addConstraintsStandard();
   void addConstraintsOverlap();
   void addBinaryArcToMap(pair<string, BinaryArc*> toAdd);
-  void addSumToToMap(pair<string, Sum*> toAdd);
+  void addSumConstraintsToMap(vector<Sum*> sums);
+  void addSumToMap(pair<string, Sum*> toAdd);
   void printMap();
 
  private:

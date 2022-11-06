@@ -7,11 +7,11 @@ using namespace std;
 #include "Control.h"
 
 int main(int argc, char* argv[]) {
-  bool useAc3 = true;
-  bool useMinRemainingValues = true;
-  bool useLeastConstrainingValues = true;
-  bool useForwardChecking = true;
-  puzzleType type = OVERLAP;
+  bool useAc3 = false;
+  bool useMinRemainingValues = false;
+  bool useLeastConstrainingValues = false;
+  bool useForwardChecking = false;
+  puzzleType type = KILLER;
 
   if (type == STANDARD) {
     for (int i = 1; i < 11; i++) {

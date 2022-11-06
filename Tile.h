@@ -17,7 +17,7 @@ class Tile {
   int getDomainSize();
   string getId();
   int getNum();
-
+  pair<int, int> getCoordinates();
   void setNum(int toSet);
   void restoreDomain(vector<int> old);
   void restoreDomainNoSet(vector<int> old);
@@ -30,6 +30,7 @@ class Tile {
   int num;  // the number it's been assigned
   vector<int> domain;
   string id;
+  pair<int, int> coordinates;
 
   void trySetNum();
 };
