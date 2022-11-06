@@ -10,7 +10,7 @@ Control::Control(string filename, puzzleType type, bool useAc3, bool useMinRemai
   if (type == STANDARD) {
     readInStandard(filename, 9);
     addConstraintsStandard();
-    printPuzzle();
+    puzzle->printPuzzle();
     if (useAc3) {
       ac3();
     }
@@ -21,7 +21,7 @@ Control::Control(string filename, puzzleType type, bool useAc3, bool useMinRemai
     addConstraintsOverlap();
     //  printConstraintsMap();
     // puzzle->printPuzzleData();
-    printPuzzle();
+    puzzle->printPuzzle();
 
     if (useAc3) {
       ac3();
@@ -29,6 +29,10 @@ Control::Control(string filename, puzzleType type, bool useAc3, bool useMinRemai
     }
     backtrackingSearch();
     printPuzzleData();
+  } else if (type == KILLER) {
+    readInKiller(filename);
+    puzzle->printPuzzle();
+    solution->printPuzzle();
   }
 }
 
@@ -42,11 +46,6 @@ void Control::printConstraintsMap() {
     }
     cout << endl;
   }
-}
-
-void Control::printPuzzle() {
-  puzzle->printPuzzle();
-  cout << endl;
 }
 
 void Control::printPuzzleData() {
@@ -190,6 +189,40 @@ void Control::readInStandard(string filename, int side) {
   myFile.close();
 }
 
+void Control::readInKiller(string filename) {
+  ifstream myFile;
+  myFile.open(filename);
+  if (!myFile) {
+    cerr << "Could not find filename" << endl;
+    return;
+  }
+
+  for (int a = 0; a < 2; a++) {
+    vector<vector<Tile*>> outer;
+    for (int i = 0; i < 9; i++) {
+      string line;
+      getline(myFile, line);
+      stringstream lineStream(line);
+      vector<Tile*> inner;
+      for (int j = 0; j < 9; j++) {
+        int assignment = 0;
+        lineStream >> assignment;
+        Tile* t = new Tile(assignment, i, j);
+        inner.push_back(t);
+      }
+      outer.push_back(inner);
+    }
+    if (a == 0) puzzle = new Puzzle(outer);
+    if (a == 1) solution = new Puzzle(outer);
+    string emptyLine;
+    getline(myFile, emptyLine);
+  }
+
+  // now time to read in the sum constraints
+
+  myFile.close();
+}
+
 bool Control::ac3() {
   queue<BinaryArc*> q;  // add all the arcs to the queue
   map<string, vector<Constraint*>>::iterator it;
@@ -217,8 +250,6 @@ bool Control::ac3() {
 
   return true;
 }
-
-// TODO: move this back to BinaryArc?
 
 void Control::backtrackingSearch() {
   backtrack();
@@ -268,16 +299,11 @@ bool Control::backtrack() {
 }
 
 Tile* Control::selectUnassignedVariable() {
-  // thinking recursively so hopefully this works?
-  // TODO: should this go outside? otherwise we are always looking at the same ones?
-
   vector<Tile*> unassigned = getUnassignedVariables();
-
   if (unassigned.size() > 0) {
-    return unassigned[0];  // just return the first one right?
+    return unassigned[0];
   }
-  // cout << "size is 0" << endl;
-  return nullptr;  // will this work?
+  return nullptr;
 }
 
 vector<Tile*> Control::getUnassignedVariables() {
@@ -338,8 +364,8 @@ vector<pair<Tile*, vector<int>>> Control::forwardCheck(Tile* t) {
     BinaryArc* b = (BinaryArc*)c;
     //  cout << "id1: " << b->getId1() << " id2: " << b->getId2() << endl;
     // cout << "check: " << b->getTile1()->getId() << " check: " << b->getTile2()->getId() << endl;
-    Tile* n = b->getTile2();  // TODO: fix this to Tile1!
-    if (n->getNum() == 0) {   // unassigned
+    Tile* n = b->getTile2();
+    if (n->getNum() == 0) {  // unassigned
       // cout << n->getId() << " ";
 
       //  history.push_back(make_pair(string(n->getId()), vector<int>(n->getDomain())));

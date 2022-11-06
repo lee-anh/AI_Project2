@@ -11,7 +11,7 @@ int main(int argc, char* argv[]) {
   bool useMinRemainingValues = true;
   bool useLeastConstrainingValues = true;
   bool useForwardChecking = true;
-  puzzleType type = OVERLAP;
+  puzzleType type = KILLER;
 
   if (type == STANDARD) {
     for (int i = 1; i < 11; i++) {
@@ -22,6 +22,11 @@ int main(int argc, char* argv[]) {
     for (int i = 1; i < 11; i++) {
       cout << "Puzzle " << i << "-----------------------------" << endl;
       Control* p = new Control("./Sudoku/overlap/puzzle" + to_string(i) + ".txt", OVERLAP, useAc3, useMinRemainingValues, useLeastConstrainingValues, useForwardChecking);
+    }
+  } else if (type == KILLER) {
+    for (int i = 1; i < 2; i++) {
+      cout << "Puzzle " << i << "-----------------------------" << endl;
+      Control* p = new Control("./Sudoku/killer/puzzle" + to_string(i) + ".txt", KILLER, useAc3, useMinRemainingValues, useLeastConstrainingValues, useForwardChecking);
     }
   }
 

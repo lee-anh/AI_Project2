@@ -20,12 +20,12 @@ class Control {
   /// @param useForwardChecking
   Control(string filename, puzzleType type, bool useAc3, bool useMinRemainingValues, bool useLeastConstrainingValue, bool useForwardChecking);
   void printConstraintsMap();
-  void printPuzzle();
   void backtrackingSearch();
   void printPuzzleData();
 
  private:
   Puzzle* puzzle;
+  Puzzle* solution;  // only used for Killer Sudoku
   puzzleType type;
   bool useMinRemainingValues;
   bool useLeastConstrainingValue;
@@ -34,15 +34,16 @@ class Control {
 
   // might make sense to make this a separate class?
   map<string, vector<Constraint*>> constraints;
+
+  // stack of changes==
   stack<vector<int>> assignmentHistory;
   stack<vector<pair<Tile*, vector<int>>>> inferenceHistory;
-  // keep a stack of changes
-  // a dictionary would be smart. what exactly are we changing?
 
   void addConstraintsStandard();
   void addConstraintsOverlap();
   void addToMap(pair<string, BinaryArc*> toAdd);
   void readInStandard(string filename, int side);
+  void readInKiller(string filename);
   // only used for ac-3, which is only called once
   bool ac3();
   bool revise(BinaryArc* ba);

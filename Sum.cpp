@@ -1,5 +1,6 @@
 #include "Sum.h"
 
+/*
 Sum::Sum(int target, int maxNumVal) {
   this->target = target;
   this->maxNumVal = maxNumVal;
@@ -45,3 +46,4 @@ bool Sum::remove(int val) {
   }
   return false;
 }
+*/

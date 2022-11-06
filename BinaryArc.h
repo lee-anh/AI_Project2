@@ -16,7 +16,7 @@ class BinaryArc : public Constraint {
   // BinaryArc(string id1, string id2);
   // we need to make sure that the assignments are satisfied?
 
-  bool revise();
+  bool revise();  // for ac3
   Tile* getTile1();
   Tile* getTile2();
 

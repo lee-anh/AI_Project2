@@ -22,29 +22,11 @@ Puzzle::Puzzle(Puzzle* p) {
 }
 
 bool Puzzle::isAssignmentComplete() {
-  // if (arr.size() == 9) {
   for (int i = 0; i < (int)arr.size(); i++) {
     for (int j = 0; j < (int)arr[i].size(); j++) {
       if (arr[i][j]->getNum() == 0) return false;
     }
   }
-  //  }
-
-  /*
-  else if (arr.size() == 15) {
-    // for overlapping we will get some empty tiles
-    int count = 0;
-    for (int i = 0; i < (int)arr.size(); i++) {
-      for (int j = 0; j < (int)arr[i].size(); j++) {
-        if (arr[i][j]->getNum() == 0) count++;
-      }
-    }
-    if (count != 54) return false;
-  }
-  */
-
-  // puzzle length
-
   return true;
 }
 
@@ -74,40 +56,6 @@ void Puzzle::assignDomainOnes() {
 Tile* Puzzle::getTile(int x, int y) {
   return arr[x][y];
 }
-
-/*
-Tile* Puzzle::getTile(string id) {
-  // cout << "begin" << endl;
-  int x = 0;
-  int y = 0;
-  if (id.length() == 3) {
-    x = stoi(string(1, id[0]));
-    y = stoi(string(1, id[2]));
-  } else if (id.length() == 5) {
-    x = stoi(id.substr(0, 2));
-    y = stoi(id.substr(3, 2));
-  } else if (id.length() == 4) {
-    int space = 0;
-    for (int i = 0; i < (int)id.length(); i++) {
-      if (id[i] == '-') {
-        space = i;
-        break;
-      }
-    }
-
-    if (space == 2) {
-      x = stoi(id.substr(0, 2));
-      y = stoi(id.substr(3, 1));
-    } else {
-      x = stoi(id.substr(0, 1));
-      x = stoi(id.substr(2, 2));
-    }
-  }
-  // cout << "end" << endl;
-
-  return getTile(x, y);
-}
-*/
 
 vector<vector<Tile*>> Puzzle::getPuzzleArr() {
   return arr;
