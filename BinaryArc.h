@@ -13,7 +13,7 @@ using namespace std;
 class BinaryArc : virtual public Constraint {
  public:
   BinaryArc(Tile* t1, Tile* t2);
-  BinaryArc(int targetSum, vector<Tile*> tiles);
+
   // BinaryArc(string id1, string id2);
   // we need to make sure that the assignments are satisfied?
 

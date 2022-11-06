@@ -11,8 +11,8 @@ class Constraint {
  public:
   Constraint();
   ~Constraint();
-  Constraint(int targetSum, vector<Tile*> tiles);
-  Constraint(Tile* t1, Tile* t2);
+ //  Constraint(int targetSum, vector<Tile*> tiles);
+  // Constraint(Tile* t1, Tile* t2);
 
   pair<int, int> virtual getTile1() = 0;
   pair<int, int> virtual getTile2() = 0;

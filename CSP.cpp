@@ -114,7 +114,7 @@ void CSP::addBinaryArcToMap(pair<string, BinaryArc*> toAdd) {
 
 void CSP::addSumConstraintsToMap(vector<Sum*> sums) {
   for (Sum* s : sums) {
-    cout << "s size " << s->getTiles().size() << endl;
+    // cout << "s size " << s->getTiles().size() << endl;
     for (Tile* t : s->getTiles()) {
       addSumToMap(make_pair(t->getId(), s));
     }
@@ -126,6 +126,7 @@ void CSP::addSumToMap(pair<string, Sum*> toAdd) {
   if (it != constraints.end()) {
     it->second.push_back(toAdd.second);
     // we are not checking for duplicates
+
     return;
   }
   // add the key to the map
@@ -139,8 +140,13 @@ void CSP::printMap() {
   for (it = constraints.begin(); it != constraints.end(); it++) {
     cout << "Key: " << it->first << " Values: ";
     for (int i = 0; i < it->second.size(); i++) {
+      cout << "( ";
+      for (Tile* t : it->second.at(i)->getTiles()) {
+        cout << t->getId() << " ";
+      }
+      cout << ")";
       //  cout << ((BinaryArc*)it->second.at(i))->getTile2()->getId() << " ";
-      cout << (puzzle->getTile(it->second.at(i)->getTile2()))->getId() << " ";
+      // cout << (puzzle->getTile(it->second.at(i)->getTile2()))->getId() << " ";
     }
     cout << endl;
   }

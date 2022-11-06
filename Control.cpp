@@ -32,18 +32,19 @@ Control::Control(string filename, puzzleType type, bool useAc3, bool useMinRemai
   } else if (type == KILLER) {
     readInKiller(filename);
     constraints = new CSP(puzzle);
+    constraints->addConstraintsStandard();
     puzzle->printPuzzle();
+    solution->printPuzzle();
     if (useAc3) {
       ac3();
       // printPuzzle();
     }
-    cout << "before add SumConstraints to Map" << endl;
+    // constraints->printMap();
+    // cout << "before add SumConstraints to Map" << endl;
     constraints->addSumConstraintsToMap(sumConstraints);
-    cout << "after add SumConstraints to Map" << endl;
-
+    // cout << "after add SumConstraints to Map" << endl;
+    //  constraints->printMap();
     backtrackingSearch();
-    // now we can use the sums
-    puzzle->printPuzzle();
   }
 }
 
@@ -190,7 +191,7 @@ bool Control::backtrack() {
       assignmentHistory.push(var->getDomain());  // add to memory
                                                  //  cout << "var id: " << var->getId() << " " << var->getDomain().size() << endl;
       var->setNum(x);
-      // where should we keep the stack of inferences? here or somewhere else?
+
       if (useForwardChecking) {
         forwardCheck(var);
         if (backtrack()) {
@@ -222,7 +223,6 @@ Tile* Control::selectUnassignedVariable() {
 vector<Tile*> Control::getUnassignedVariables() {
   vector<vector<Tile*>> arr = puzzle->getPuzzleArr();
 
-  // otherwise just consider the tiles in order
   vector<Tile*> toReturn;
   for (int i = 0; i < (int)arr.size(); i++) {
     for (int j = 0; j < (int)arr[i].size(); j++) {
@@ -274,31 +274,7 @@ vector<vector<pair<Tile*, vector<int>>>> Control::forwardCheck(Tile* t) {
   vector<vector<pair<Tile*, vector<int>>>> history;
   //  cout << "check for " << t->getId() << " " << t->getNum() << " | ";
   for (Constraint* c : neighbors) {
-    // TODO: we need to make this work for the sums too
-    // why does this only sometimes work?
-    // BinaryArc* b = (BinaryArc*)c;
-    //  cout << "id1: " << b->getId1() << " id2: " << b->getId2() << endl;
-    // cout << "check: " << b->getTile1()->getId() << " check: " << b->getTile2()->getId() << endl;
-    // Tile* n = b->getTile2();
-    // TODO: removeFromDomainOfOtherTiles
     history.push_back(c->removeFromDomainOfOtherTiles(t->getId(), t->getNum()));
-
-    /*
-    if (n->getNum() == 0) {  // unassigned
-      // cout << n->getId() << " ";
-
-      //  history.push_back(make_pair(string(n->getId()), vector<int>(n->getDomain())));
-      history.push_back(make_pair(n, n->getDomain()));
-
-      n->removeFromDomain(t->getNum());
-
-      if (n->getDomainSize() == 0) {  // technically we wouldn't reach this point?
-        // restoreNeighborsForForwardCheck(history);
-        inferenceHistory.push(history);
-        return history;
-      }
-    }
-    */
   }
   //  cout << endl;
 
@@ -310,31 +286,23 @@ vector<vector<pair<Tile*, vector<int>>>> Control::forwardCheck(Tile* t) {
 // restore from forward check?
 void Control::restoreNeighborsForForwardCheck(vector<vector<pair<Tile*, vector<int>>>> history) {
   // cout << endl
-  //     << "restore: ";
+  //    << "restore: ";
 
   for (vector<pair<Tile*, vector<int>>> toRestore : history) {
     for (pair<Tile*, vector<int>> x : toRestore) {
+      //  cout << x.first->getId() << " ";
       Tile* tile = x.first;
-      //  cout << toRestore.first->getId() << " = " << tile->getId() << " ";
+      // cout << toRestore.first->getId() << " = " << tile->getId() << " ";
       tile->restoreDomain(x.second);
     }
+    // cout << " | ";
   }
   // cout << endl;
 }
-
 bool Control::checkConsistent(string tileId, int proposedAssignment) {
-  //  cout << "begin checkConsistent" << endl;
-  // cout << "tileId: " << tileId << endl;
   vector<Constraint*> neighbors = constraints->findConstraints(tileId);
-  // cout << "after find constraints" << endl;
-  for (Constraint* c : neighbors) {
-    // TODO: make this work for sum constraint too
-    // we have to check it with the currently assigned things
-    //  BinaryArc* b = (BinaryArc*)c;
-    //   Tile* n = b->getTile2();
 
-    // if ((n->getNum() != 0) && (proposedAssignment == n->getNum())) return false;
-    // if (!((BinaryArc*)c)->proposeAssignment(proposedAssignment)) return false;
+  for (Constraint* c : neighbors) {
     if (!(c->proposeAssignment(tileId, proposedAssignment))) return false;
   }
   return true;
@@ -349,6 +317,9 @@ Sum* Control::createSumHelper(vector<int> tiles) {
     toPass.push_back(puzzle->getTile(row, col));
     runningSum += solution->getTile(row, col)->getNum();
   }
-  cout << "total sum: " << runningSum << endl;
+  if ((int)toPass.size() == 1) {
+    toPass[0]->setNum(runningSum);
+  }
+  //  cout << "total sum: " << runningSum << endl;
   return new Sum(runningSum, toPass);
 }

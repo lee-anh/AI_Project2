@@ -11,7 +11,6 @@ using namespace std;
 
 class Sum : virtual public Constraint {
  public:
-  Sum(Tile* t1, Tile* t2);
   Sum(int targetSum, vector<Tile*> tiles);
   // int getTargetSum();
   vector<Tile*> getTiles();
