@@ -1,15 +1,26 @@
 #include "CSP.h"
 
+/// @brief CSP constructor
+/// @param puzzle to create map for
 CSP::CSP(Puzzle* puzzle) {
   this->puzzle = puzzle;
 }
+
+/// @brief get the underlying map
+/// @return
 map<string, vector<Constraint*>> CSP::getMap() {
   return constraints;
 }
+
+/// @brief get all the constraints (value) given a tileId (key)
+/// @param tileId the id of the tile to find the constraints of
+/// @return the value (vector of Constraints)
 vector<Constraint*> CSP::findConstraints(string tileId) {
   return constraints.find(tileId)->second;
 }
 
+/// @brief add Alldiff constraints for a Standard puzzle to the map
+/// convert them all to BinaryArcs
 void CSP::addConstraintsStandard() {
   vector<Alldiff*> alldiffs;
 
@@ -42,6 +53,7 @@ void CSP::addConstraintsStandard() {
   }
 }
 
+/// @brief add Alldiff constraints for a Overlapping puzzle to the map
 void CSP::addConstraintsOverlap() {
   vector<Alldiff*> alldiffs;
 
@@ -88,16 +100,13 @@ void CSP::addConstraintsOverlap() {
   }
 }
 
+/// @brief add a BinaryArc to the map
+/// @param toAdd a pair of a tileid and a binary arc to add
 void CSP::addBinaryArcToMap(pair<string, BinaryArc*> toAdd) {
   map<string, vector<Constraint*>>::iterator it = constraints.find(toAdd.first);
   if (it != constraints.end()) {
-    // TODO: put this back in
-
     for (Constraint* c : it->second) {
-      //  BinaryArc* b = (BinaryArc*)c;
-      // do not allow duplicates
-      // if ((b->getId1() == toAdd.second->getId1()) && (b->getId2() == toAdd.second->getId2())) {
-      if ((puzzle->getTile(c->getTile1())->getId() == puzzle->getTile(toAdd.second->getTile1())->getId()) && (puzzle->getTile(c->getTile2())->getId() == puzzle->getTile(toAdd.second->getTile2())->getId())) {
+      if ((c->getTiles().at(0)->getId() == toAdd.second->getTiles().at(0)->getId()) && (c->getTiles().at(1)->getId() == toAdd.second->getTiles().at(1)->getId())) {
         return;
       }
     }
@@ -112,6 +121,8 @@ void CSP::addBinaryArcToMap(pair<string, BinaryArc*> toAdd) {
   constraints.insert(make_pair(toAdd.first, temp));
 }
 
+/// @brief add a vector of Sum to the map
+/// @param sums a vector of Sums to add
 void CSP::addSumConstraintsToMap(vector<Sum*> sums) {
   for (Sum* s : sums) {
     // cout << "s size " << s->getTiles().size() << endl;
@@ -121,20 +132,7 @@ void CSP::addSumConstraintsToMap(vector<Sum*> sums) {
   }
 }
 
-void CSP::addSumToMap(pair<string, Sum*> toAdd) {
-  map<string, vector<Constraint*>>::iterator it = constraints.find(toAdd.first);
-  if (it != constraints.end()) {
-    it->second.push_back(toAdd.second);
-    // we are not checking for duplicates
-
-    return;
-  }
-  // add the key to the map
-  vector<Constraint*> temp;
-  temp.push_back(toAdd.second);
-  constraints.insert(make_pair(toAdd.first, temp));
-}
-
+/// @brief print the constraints in the map
 void CSP::printMap() {
   map<string, vector<Constraint*>>::iterator it;
   for (it = constraints.begin(); it != constraints.end(); it++) {
@@ -150,4 +148,20 @@ void CSP::printMap() {
     }
     cout << endl;
   }
+}
+
+/// @brief add one sum constraint to the map
+/// @param toAdd a pair of tile id and Sum Constraint to add
+void CSP::addSumToMap(pair<string, Sum*> toAdd) {
+  map<string, vector<Constraint*>>::iterator it = constraints.find(toAdd.first);
+  if (it != constraints.end()) {
+    it->second.push_back(toAdd.second);
+    // we are not checking for duplicates
+
+    return;
+  }
+  // add the key to the map
+  vector<Constraint*> temp;
+  temp.push_back(toAdd.second);
+  constraints.insert(make_pair(toAdd.first, temp));
 }

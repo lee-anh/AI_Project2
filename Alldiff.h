@@ -10,36 +10,38 @@
 
 using namespace std;
 
+/// @brief  Alldiff represents a constraint where all the Tiles must have different values
 class Alldiff {
  public:
-  // need a Puzzle, a setting, and the starting tile's coordinate
+  /// @brief Constructor
+  /// @param pArr puzzle array (array of tiles)
+  /// @param g the type of group it is in ex. box, col, row
+  /// @param x the x coordinate of the left/upper most tile
+  /// @param y the y coordinate of the left/upper
   Alldiff(vector<vector<Tile*>> pArr, group g, int x, int y);  // don't need to do any thing
 
+  /// @brief convert an Alldiff to Binary Arcs
+  /// @return vector of tile id and BinaryArcs
   vector<pair<string, BinaryArc*>> toBinaryArcs();
 
-  // these vals are in the domain
-  // so we would want to see if adding a certain val for a certain variable would be ok
-  // forward checking?
-  // TODO: a check function might be ok
-
-  // actually putting a value in permanently
-
+  /// @brief print out the tile ids associated with this constraint
   void printAlldiff();
 
  private:
-  vector<Tile*> arr;  // all the tiles in the range that must be different
+  vector<Tile*> arr;
   vector<vector<Tile*>> pArr;
   group g;
   int x;
   int y;
 
+  /// @brief create an alldiff for a box
   void initBox();
-  void initCol();
-  void initRow();
 
-  void toBinariesRow();  // give leftmost Tile
-  void toBinariesCol();  // give topmost Tile
-  void toBinariesBox();  // give top left corner Tile
+  /// @brief create an alldiff for a column
+  void initCol();
+
+  /// @brief create an alldiff for a row
+  void initRow();
 };
 
 #endif

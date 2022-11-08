@@ -1,6 +1,10 @@
 #include "Tile.h"
 
-// we know the assignment ahead of time, so we wouldn't care about the domain
+/// @brief Tile Constructor
+/// @param num the value assigned to the tile, 0 if no number has been assigned yet
+/// default adds domain {1,...,9} for unassigned tiles
+/// @param x coordinate of the tile
+/// @param y coordinate of the tile
 Tile::Tile(int num, int x, int y) {
   this->num = num;
   if (num == 0) {  // we don't know the assignment ahead of time
@@ -14,32 +18,45 @@ Tile::Tile(int num, int x, int y) {
   coordinates = make_pair(x, y);
 }
 
+/// @brief Deep copy Constructor
+/// @param t tile to make deep copy of
 Tile::Tile(Tile* t) {
   this->num = t->num;
   this->domain = t->domain;
   this->id = t->id;
 }
 
+/// @brief get the domain of possible values for the tile
+/// @return
 vector<int> Tile::getDomain() {
   return domain;
 }
 
+/// @brief get the current domain size
+/// @return
+int Tile::getDomainSize() {
+  return (int)domain.size();
+}
+/// @brief get the tile's id
+/// @return
 string Tile::getId() {
   return id;
 }
 
-// don't know if we will even need this
-int Tile::getDomainSize() {
-  return (int)domain.size();
-}
-
+/// @brief get the tile's current assignment
+/// @return
 int Tile::getNum() {
   return num;
 }
 
+/// @brief get the tile's coordinates
+/// @return
 pair<int, int> Tile::getCoordinates() {
   return coordinates;
 }
+
+/// @brief set the assignment of the block
+/// @param toSet assignment
 void Tile::setNum(int toSet) {
   // make sure that the assignment is not zero?
   if (num != 0) return;  // number is already set
@@ -49,47 +66,22 @@ void Tile::setNum(int toSet) {
   domain.push_back(num);
 }
 
+/// @brief restore the domain, possibly setting a value if the domain is 1
+/// @param old domain
 void Tile::restoreDomain(vector<int> old) {
-  // cout << "restore for: " << id;
-  // cout << " curr: ";
-  //  for (int x : domain) cout << x << " ";
-  //  cout << "restored: ";
-  //  for (int x : old) cout << x << " ";
-  // cout << endl;
   num = 0;
-
-  /*
-  if (old.size() == 1) {
-    num = old[0];
-  }
-  */
-
   domain = old;
 }
 
+/// @brief restore the domain without resetting the value
+/// @param old domain
 void Tile::restoreDomainNoSet(vector<int> old) {
   num = 0;
   domain = old;
 }
 
-bool Tile::removeFromDomainNoSet(int val) {
-  int index = -1;
-  for (int i = 0; i < (int)domain.size(); i++) {
-    if (domain[i] == val) {
-      index = i;
-      break;
-    }
-  }
-  if (index != -1) {
-    domain.erase(domain.begin() + index);
-  }
-  if (domain.size() == 0) {
-    cout << "remove from domain, now size is 0" << endl;
-    return false;
-  }
-  return true;
-}
-
+/// @brief remove val from domain, possibly setting the tile if the domain becomes 1
+/// @param val
 void Tile::removeFromDomain(int val) {
   int index = -1;
   for (int i = 0; i < (int)domain.size(); i++) {
@@ -104,12 +96,38 @@ void Tile::removeFromDomain(int val) {
   }
 }
 
+/// @brief remove val from domain, without setting a value
+/// @param val
+/// @return
+bool Tile::removeFromDomainNoSet(int val) {
+  int index = -1;
+  for (int i = 0; i < (int)domain.size(); i++) {
+    if (domain[i] == val) {
+      index = i;
+      break;
+    }
+  }
+  if (index != -1) {
+    domain.erase(domain.begin() + index);
+  }
+  if (domain.size() == 0) {
+    // cout << "remove from domain, now size is 0" << endl;
+    return false;
+  }
+  return true;
+}
+
+/// @brief check to see if val is in. domain
+/// @param val
+/// @return true if val is in domain, false if not
 bool Tile::isInDomain(int val) {
   for (int x : domain) {
     if (x == val) return true;
   }
   return false;
 }
+
+/// @brief print tile data
 void Tile::printTile() {
   cout << "Id: " << id << " Assignment: " << num << " Domain: ";
   for (int i = 0; i < (int)domain.size(); i++) {
@@ -118,6 +136,7 @@ void Tile::printTile() {
   cout << endl;
 }
 
+/// @brief try to set the number of the tile if the domain becomes 1
 void Tile::trySetNum() {
   if ((int)domain.size() == 1) {
     num = domain[0];

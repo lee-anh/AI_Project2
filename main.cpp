@@ -8,25 +8,53 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
   bool useAc3 = true;
-  bool useMinRemainingValues = true;  // this one is causing a slow down in iller, but makes sense
+  bool useMinRemainingValues = true;
   bool useLeastConstrainingValues = true;
-  bool useForwardChecking = false;
-  puzzleType type = KILLER;
+  bool useForwardChecking = true;
+  puzzleType type = OVERLAP;  // either STANDARD, OVERLAP, or KILLER
+
+  // the fastest configurationss
+  if (argc == 2) {
+    if (stoi(argv[1]) == 1) {
+      useAc3 = true;
+      useMinRemainingValues = true;
+      useLeastConstrainingValues = true;
+      useForwardChecking = true;
+      type = STANDARD;
+
+    } else if (stoi(argv[1]) == 2) {
+      useAc3 = true;
+      useMinRemainingValues = true;
+      useLeastConstrainingValues = true;
+      useForwardChecking = true;
+      type = OVERLAP;
+
+    } else if (stoi(argv[1]) == 3) {
+      useAc3 = true;
+      useMinRemainingValues = false;
+      useLeastConstrainingValues = true;
+      useForwardChecking = false;
+      type = KILLER;
+    }
+  }
 
   if (type == STANDARD) {
     for (int i = 1; i < 11; i++) {
       cout << "Puzzle " << i << "----------------------" << endl;
-      Control* p = new Control("./Sudoku/standard/puzzle" + to_string(i) + ".txt", type, useAc3, useMinRemainingValues, useLeastConstrainingValues, useForwardChecking);
+      Control* p = new Control("./Sudoku/standard/puzzle" + to_string(i) + ".txt", "./log/standard_data.txt", type, useAc3, useMinRemainingValues, useLeastConstrainingValues, useForwardChecking);
+      p->writeDataToLog();
     }
   } else if (type == OVERLAP) {
     for (int i = 1; i < 11; i++) {
       cout << "Puzzle " << i << "-----------------------------" << endl;
-      Control* p = new Control("./Sudoku/overlap/puzzle" + to_string(i) + ".txt", OVERLAP, useAc3, useMinRemainingValues, useLeastConstrainingValues, useForwardChecking);
+      Control* p = new Control("./Sudoku/overlap/puzzle" + to_string(i) + ".txt", "./log/overlap_data.txt", type, useAc3, useMinRemainingValues, useLeastConstrainingValues, useForwardChecking);
+      p->writeDataToLog();
     }
   } else if (type == KILLER) {
     for (int i = 1; i < 11; i++) {
       cout << "Puzzle " << i << "----------------------" << endl;
-      Control* p = new Control("./Sudoku/killer/puzzle" + to_string(i) + ".txt", KILLER, useAc3, useMinRemainingValues, useLeastConstrainingValues, useForwardChecking);
+      Control* p = new Control("./Sudoku/killer/puzzle" + to_string(i) + ".txt", "./log/killer_data.txt", type, useAc3, useMinRemainingValues, useLeastConstrainingValues, useForwardChecking);
+      p->writeDataToLog();
     }
   }
 

@@ -17,27 +17,52 @@
 
 using namespace std;
 
+/// @brief the Puzzle class represents the board of a Sudoku puzzle
 class Puzzle {
  public:
-  // Puzzle(string filename, puzzleType type);
+  /// @brief Puzzle Constructor
+  /// @param arr array of tiles representing the board
   Puzzle(vector<vector<Tile*>> arr);
 
-  // deep copy constructor
+  /// @brief Deep copy constructor
+  /// @param p
   Puzzle(Puzzle* p);
 
   /// @brief check if assignment complete
-  /// @return
+  /// @return true if all the tiles have assigned values
   bool isAssignmentComplete();
-  int getInitialNumUnassigned();
-  int numUnassigned();
-  void assignDomainOnes();
 
+  /// @brief get the number of tiles that were initially unassigned
+  /// @return
+  int getInitialNumUnassigned();
+
+  /// @brief get the current number of tiles that are unassigned
+  /// @return the current number of unassigned tiles
+  int numUnassigned();
+
+  /// @brief get the average domain size of unassigned tiles
+  /// @return the average number of elements in the domain
+  float getAverageDomainSize();
+
+  /// @brief get a tile given x and y coordinate
+  /// @param x coordinate
+  /// @param y coordinate
+  /// @return Tile object
   Tile* getTile(int x, int y);
+
+  /// @brief get a tile given x and y coordinate in a pair
+  /// @param coordinate
+  /// @return Tile object
   Tile* getTile(pair<int, int> coordinate);
-  // Tile* getTile(string id);
+
+  /// @brief get the underlying array of Tiles
+  /// @return
   vector<vector<Tile*>> getPuzzleArr();
 
+  /// @brief print the puzzle
   void printPuzzle();
+
+  /// @brief print the data of each Tile in the puzzle
   void printPuzzleData();
 
  private:
